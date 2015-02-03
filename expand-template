@@ -1,9 +1,8 @@
 #!/usr/bin/bash
 #
-# This script substitutes environiment variables in shell format strings. It is
+# This script substitutes environment variables in shell format strings. It is
 # a wrapper around `envsubst' and provides a number of convenient functions.
 #
-
 
 ################################################################################
 #                                DEFAULT OPTIONS
@@ -17,14 +16,17 @@ OPT_EXPAND=0
 
 
 ################################################################################
-#                           HANDLE OPTIONS & ARGUMENTS
+#                                 HANDLE OPTIONS
 ################################################################################
 
 usage () {
   cat<<EOUSAGE
-Usage: $(basename "$0") [options] template [destination]
+Usage:
+  $(basename "$0") [options] <template> [destination]
+  ... | $(basename "$0") [options] [destination]
+
 Arguments:
-  template   template file to expand
+  template   template file to expand, can be read from STDIN instead
 
 Destination:
   Defaults to STDOUT if not specified.
@@ -39,7 +41,6 @@ Options:
 EOUSAGE
 }
 
-# Handle options.
 TEMP=$(getopt --options m,e \
               --long missing,no-expand \
               --name "$(basename "$0")" -- "$@")
@@ -56,18 +57,41 @@ while true; do
   esac
 done
 
-# Handle arguments.
-if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
-  usage
-  exit 1
-fi
 
-# Template file.
-INPUT="$1"
+################################################################################
+#                                HANDLE ARGUMENTS
+################################################################################
 
-# If output is a directory, use the input file's name w/o the `.tmpl' suffix.
-if [ "$#" -eq 2 ]; then
-  OUTPUT="$([ -d "$2" ] && echo "$2/$(basename "${1%.tmpl}")" || echo "$2")"
+unset OUTPUT
+if tty -s <&0; then
+  # Template read from file.
+  if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+    usage
+    exit 1
+  fi
+
+  # If output is a directory, use the input file's name w/o the `.tmpl' suffix.
+  if [ "$#" -eq 2 ]; then
+    OUTPUT="$([ -d "$2" ] && echo "$2/$(basename "${1%.tmpl}")" || echo "$2")"
+  fi
+
+  INPUT="$(cat "$1")"
+else
+  # Template read from STDIN.
+  if [ "$#" -gt 1 ]; then
+    usage
+    exit 1
+  fi
+
+  if [ "$#" -eq 1 ]; then
+    if [ -d "$1" ]; then
+      echo "Error: destination cannot be a directory when reading the template from STDIN!"
+      exit 1
+    fi
+    OUTPUT="$1"
+  fi
+
+  INPUT="$(cat)"
 fi
 
 
@@ -84,7 +108,7 @@ fi
 # Globals:
 #   none
 # Arguments:
-#   $1 - template file
+#   $1 - template string
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -96,10 +120,11 @@ get_referenced () {
 
   local ref_vars
   ref_vars=( $(
-    # Remove braces around variable names \
-    #   | surround variable references with newlines \
-    #   | output variable references only w/o leading $
-    sed -r "s/\\\$\{(${name})\}/$\1/g" < "$input" \
+    # 1. remove braces around variable names \
+    # 2. surround variable references with newlines \
+    # 3. output variable references only w/o leading $
+    echo "$input" \
+      | sed -r "s/\\\$\{(${name})\}/$\1/g" \
       | sed -r "s/\\\$${name}/\n&\n/g" \
       | sed -nr "s/\\\$(${name})/\1/p"
     ) )
@@ -118,7 +143,7 @@ get_referenced () {
 # Globals:
 #   All environmental variables.
 # Arguments:
-#   $1 - template file
+#   $1 - template string
 # Outputs:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -145,7 +170,7 @@ get_missing () {
 # Globals:
 #   All environmental variables.
 # Arguments:
-#   $1 - template file
+#   $1 - template string
 # Outputs:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -186,8 +211,8 @@ fi
 # Expand template.
 if [ "${OUTPUT:-x}" != 'x' ]; then
   # Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
-  cat "$INPUT" | envsubst $SHELL_FORMAT > "$OUTPUT"
+  echo "$INPUT" | envsubst $SHELL_FORMAT > "$OUTPUT"
 else
   # Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
-  cat "$INPUT" | envsubst $SHELL_FORMAT
+  echo "$INPUT" | envsubst $SHELL_FORMAT
 fi

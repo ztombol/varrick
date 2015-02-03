@@ -10,8 +10,8 @@ test_m_missing () {
   run "$EXEC" $1 "$template"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -gt 1 ]
-  [ "${lines[0]}" = 'Error: the variables below are referenced but not defined!' ]
-  [ "${lines[1]}" = '_thing' ]
+  [ "${lines[0]}" == 'Error: the variables below are referenced but not defined!' ]
+  [ "${lines[1]}" == '_thing' ]
 }
 
 @test "\`-m' reports missing variables and exit with 1" {
