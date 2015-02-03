@@ -123,10 +123,12 @@ get_referenced () {
     # 1. remove braces around variable names \
     # 2. surround variable references with newlines \
     # 3. output variable references only w/o leading $
+    # 4. remove duplicates
     echo "$input" \
-      | sed -r "s/\\\$\{(${name})\}/$\1/g" \
-      | sed -r "s/\\\$${name}/\n&\n/g" \
-      | sed -nr "s/\\\$(${name})/\1/p"
+      | sed -r -e "s/\\\$\{(${name})\}/$\1/g" \
+               -e "s/\\\$${name}/\n&\n/g" \
+      | sed -nr "s/\\\$(${name})/\1/p" \
+      | sort -u
     ) )
 
   printf "%s\n" "${ref_vars[@]}"
@@ -152,7 +154,7 @@ get_referenced () {
 get_missing () {
   local input="$1"
   local temp_vars miss_vars
-  temp_vars=( $(get_referenced "$input" | sort -u) )
+  temp_vars=( $(get_referenced "$input") )
   miss_vars=( $(comm -23 <(printf "%s\n" "${temp_vars[@]}") \
                          <(printf "%s\n" "$(compgen -e | sort)")) )
   printf "%s\n" "${miss_vars[@]}"
@@ -180,7 +182,7 @@ get_defined () {
   local input="$1"
   local temp_vars defined_vars
   
-  temp_vars=( $(get_referenced "$input" | sort -u) )
+  temp_vars=( $(get_referenced "$input") )
   defined_vars=( $(comm -12 <(printf "%s\n" "${temp_vars[@]}") \
                             <(printf "%s\n" "$(compgen -e | sort)")) )
   printf "%s\n" "${defined_vars[@]}"
