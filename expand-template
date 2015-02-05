@@ -5,14 +5,33 @@
 #
 
 ################################################################################
+#                               CHECK ENVIRONMENT
+################################################################################
+
+# Make sure we will not mask or overwrite environment variables.
+if [ -n "${!_d8e1_*}" ]; then
+  echo "Error: no variable with the prefix \`_d8e1_'\ should exist in the environment!"
+  printf "%s\n" "${!_d8e1_@}"
+  exit 2
+fi
+
+# NOTE: Make sure to prefix the name of every global variable (including
+#       non-local function variables), and local variables in functions that
+#       modify environment variables.
+
+
+################################################################################
 #                                DEFAULT OPTIONS
 ################################################################################
 
 # Report referenced variables that are missing (-m, --missing).
-OPT_MISSING=0
+_d8e1_OPT_MISSING=0
 
 # Do not expand missing variables (-n, --no-expand).
-OPT_EXPAND=0
+_d8e1_OPT_EXPAND=0
+
+# Do not expand variables preceded by a backslash (-x, --escape).
+_d8e1_OPT_ESCAPE=0
 
 
 ################################################################################
@@ -26,32 +45,71 @@ Usage:
   ... | $(basename "$0") [options] [destination]
 
 Arguments:
-  template   template file to expand, can be read from STDIN instead
+  template   Template file to expand, can be read from STDIN instead.
 
 Destination:
   Defaults to STDOUT if not specified.
 
-  file   path of resulting file
-  dir    path of directory for the resulting file, filename is set to the
-         template's name minus \`.tmpl' suffix if exists
+  file   Path of resulting file.
+  dir    Path of directory for the resulting file, filename is set to the
+         template's name minus \`.tmpl' suffix if exists.
 
 Options:
   -m, --missing     Report undefined variables and exit.
   -e, --no-expand   Do not expand variables that are not defined.
+  -x, --escape      Allow escaping variable references with a backslash.
+
+Variable References:
+  References of the form \`\$var' and \`\${var}' can be substituted with the value
+  of the environment variable of the same name.
+
+Escaping:
+  Variable references can be escaped to prevent expansion using a slash \`\\'.
+
+    $ export name=value
+    $ echo '\\\$name' | $(basename "$0")
+    \$name
+
+  If the escape character appears anywhere in the template, it has to be
+  escaped.
+
+    $ echo 'text \\\\ text' | $(basename "$0")
+    text \\ text
+
+  Escaping the escape character in the value of substituted variables is not
+  necessary.
+
+  When turning a file into template, it is useful to first escape all slashes
+  before inserting variable references.
+
+    $ sed 's/\\\\/\\\\\\\\/g' < config.conf > config.tmpl
+
+Exit status:
+  The utility exits with 0 on success. When an error is detected the exit status
+  is 1. When the internally used variable name prefix appears in the environment
+  the utility exits with 2 (see \`Caveat' section).
+
+Caveat:
+  The utility immediately exits with an error when a variable starting with the
+  prefix \`_d8e1_' is declared in the environment. This is due to the fact that
+  such variables are used internally and allowing them in the environment could
+  cause hard to find errors.
+
 EOUSAGE
 }
 
-TEMP=$(getopt --options m,e \
-              --long missing,no-expand \
-              --name "$(basename "$0")" -- "$@")
+_d8e1_TEMP=$(getopt --options m,e,x \
+                    --long missing,no-expand,escape \
+                    --name "$(basename "$0")" -- "$@")
 
 if [ $? != 0 ]; then echo "Terminating..." >&2; exit 1; fi
-eval set -- "$TEMP"
+eval set -- "$_d8e1_TEMP"
 
 while true; do
   case "$1" in
-    -m|--missing) OPT_MISSING=1; shift;;
-    -e|--no-expand) OPT_EXPAND=1; shift;;
+    -m|--missing) _d8e1_OPT_MISSING=1; shift;;
+    -e|--no-expand) _d8e1_OPT_EXPAND=1; shift;;
+    -x|--escape) _d8e1_OPT_ESCAPE=1; shift;;
     --) shift; break;;
     *) echo "Internal error!"; exit 1;;
   esac
@@ -62,7 +120,7 @@ done
 #                                HANDLE ARGUMENTS
 ################################################################################
 
-unset OUTPUT
+unset _d8e1_DEST
 if tty -s <&0; then
   # Template read from file.
   if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
@@ -72,10 +130,10 @@ if tty -s <&0; then
 
   # If output is a directory, use the input file's name w/o the `.tmpl' suffix.
   if [ "$#" -eq 2 ]; then
-    OUTPUT="$([ -d "$2" ] && echo "$2/$(basename "${1%.tmpl}")" || echo "$2")"
+    _d8e1_DEST="$([ -d "$2" ] && echo "$2/$(basename "${1%.tmpl}")" || echo "$2")"
   fi
 
-  INPUT="$(cat "$1")"
+  _d8e1_INPUT="$(cat "$1")"
 else
   # Template read from STDIN.
   if [ "$#" -gt 1 ]; then
@@ -88,10 +146,10 @@ else
       echo "Error: destination cannot be a directory when reading the template from STDIN!"
       exit 1
     fi
-    OUTPUT="$1"
+    _d8e1_DEST="$1"
   fi
 
-  INPUT="$(cat)"
+  _d8e1_INPUT="$(cat)"
 fi
 
 
@@ -120,14 +178,14 @@ get_referenced () {
 
   local ref_vars
   ref_vars=( $(
-    # 1. remove braces around variable names \
-    # 2. surround variable references with newlines \
-    # 3. output variable references only w/o leading $
+    # 1. remove braces around variable names (${var} -> $var)
+    # 2. surround variable references with newlines ($var   -> \n$var\n)
+    # 3. select lines that contain only a reference, w/o leading $
     # 4. remove duplicates
     echo "$input" \
-      | sed -r -e "s/\\\$\{(${name})\}/$\1/g" \
-               -e "s/\\\$${name}/\n&\n/g" \
-      | sed -nr "s/\\\$(${name})/\1/p" \
+      | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
+               -e 's/\$'"${name}"'/\n&\n/g' \
+      | sed -nr 's/\$('"${name}"')/\1/p' \
       | sort -u
     ) )
 
@@ -154,8 +212,8 @@ get_referenced () {
 get_missing () {
   local input="$1"
   local temp_vars miss_vars
-  temp_vars=( $(get_referenced "$input") )
-  miss_vars=( $(comm -23 <(printf "%s\n" "${temp_vars[@]}") \
+  ref_vars=( $(get_referenced "$input") )
+  miss_vars=( $(comm -23 <(printf "%s\n" "${ref_vars[@]}") \
                          <(printf "%s\n" "$(compgen -e | sort)")) )
   printf "%s\n" "${miss_vars[@]}"
   [ "${#miss_vars[@]}" -ne 0 ]
@@ -181,12 +239,86 @@ get_missing () {
 get_defined () {
   local input="$1"
   local temp_vars defined_vars
-  
-  temp_vars=( $(get_referenced "$input") )
-  defined_vars=( $(comm -12 <(printf "%s\n" "${temp_vars[@]}") \
+
+  ref_vars=( $(get_referenced "$input") )
+  defined_vars=( $(comm -12 <(printf "%s\n" "${ref_vars[@]}") \
                             <(printf "%s\n" "$(compgen -e | sort)")) )
   printf "%s\n" "${defined_vars[@]}"
   [ "${#defined_vars[@]}" -ne 0 ]
+}
+
+# Escape the template string read from STDIN. This function is necessary before
+# expanding.
+#
+# Globals:
+#   none
+# Arguments:
+#   none
+# Inputs:
+#   STDIN - template string
+# Outputs:
+#   STDOUT - escaped text
+# Returns:
+#   0 - success
+#   1 - otherwise
+escape () {
+  local name='[a-zA-Z_][a-zA-Z_0-9]*'
+
+  # 1. $\var   -> $\\var
+  # 2. $\{var} -> $\\{var}
+  # 3. (even x \)\$var   -> (even x \)$\var
+  #    (even x \)$var    -x
+  # 4. (even x \)\${var} -> (even x \)$\{var}
+  #    (even x \)${var}  -x
+  sed -r -e 's/(\$)(\\'"${name}"')/\1\\\2/g' \
+         -e 's/(\$)(\\\{'"${name}"'\})/\1\\\2/g' \
+         -e 's/((^|[^\])(\\\\)*)(\\)\$('"$name"')/\1$\4\5/g' \
+         -e 's/((^|[^\])(\\\\)*)(\\)\$(\{'"$name"'\})/\1$\4\5/g'
+  # TODO: add brace support from here to all the way down!
+}
+
+# Un-escape the given string. This function is necessary after expanding.
+#
+# Globals:
+#   none
+# Arguments:
+#   none
+# Inputs:
+#   STDIN - template string
+# Outputs:
+#   STDOUT - un-escaped text
+# Returns:
+#   0 - success
+#   1 - otherwise
+unescape () {
+  local name='[a-zA-Z_][a-zA-Z_0-9]*'
+
+  # 1. $\var -> $var
+  # 2. $\{var} -> ${var}
+  # 3. \\ -> \
+  sed -r -e 's/(\$)\\('"${name}"')/\1\2/g' \
+         -e 's/(\$)\\(\{'"${name}"'\})/\1\2/g' \
+         -e 's/\\\\/\\/g'
+}
+
+# Escape slashes in the given environment variables.
+#
+# Globals:
+#   none
+# Arguments:
+#   $@ - list of variables to escape
+# Inputs:
+#   none
+# Outputs:
+#   none
+# Returns:
+#   0 - success
+#   1 - otherwise
+escape_vars () {
+  for _d8e1_var in $@; do
+    # `\' -> `\\'
+    eval "$_d8e1_var"'="${'"$_d8e1_var"'//\\/\\\\}"'
+  done
 }
 
 
@@ -194,27 +326,37 @@ get_defined () {
 #                                      MAIN
 ################################################################################
 
-if [ "$OPT_MISSING" -eq 1 ]; then
-  MISS=( $(get_missing "$INPUT") )
+if [ "$_d8e1_OPT_MISSING" -eq 1 ]; then
+  _d8e1_MISS=( $(get_missing "$_d8e1_INPUT") )
   if [ "$?" -eq 0 ]; then
     echo "Error: the variables below are referenced but not defined!"
-    printf "%s\n" "${MISS[@]}"
+    printf "%s\n" "${_d8e1_MISS[@]}"
     exit 1
   fi
 fi
 
-unset SHELL_FORMAT
-if [ "$OPT_EXPAND" -eq 1 ]; then
-  DEFINED=( $(get_defined "$INPUT") )
-  [ "${#DEFINED[@]}" -gt 0 ] && SHELL_FORMAT="$(printf '$%s' "${DEFINED[@]}")" \
-                             || SHELL_FORMAT="''"
+unset _d8e1_SHELL_FORMAT
+if [ "$_d8e1_OPT_EXPAND" -eq 1 ]; then
+  _d8e1_DEFINED=( $(get_defined "$_d8e1_INPUT") )
+  if [ "$?" -eq 0 ]; then
+    _d8e1_SHELL_FORMAT="$(printf '$%s' "${_d8e1_DEFINED[@]}")"
+  else
+    _d8e1_SHELL_FORMAT="''"
+  fi
 fi
 
 # Expand template.
-if [ "${OUTPUT:-x}" != 'x' ]; then
-  # Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
-  echo "$INPUT" | envsubst $SHELL_FORMAT > "$OUTPUT"
+# Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
+if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then
+  escape_vars "$(get_defined "$_d8e1_INPUT")"
+  _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" \
+                    | escape \
+                    | envsubst $_d8e1_SHELL_FORMAT \
+                    | unescape)"
 else
-  # Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
-  echo "$INPUT" | envsubst $SHELL_FORMAT
+  _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" | envsubst $_d8e1_SHELL_FORMAT)"
 fi
+
+# Output
+[ "${_d8e1_DEST:-x}" != 'x' ] && echo "$_d8e1_OUTPUT" > "$_d8e1_DEST" \
+                              || echo "$_d8e1_OUTPUT"

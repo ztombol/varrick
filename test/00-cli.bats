@@ -2,6 +2,17 @@
 
 load test-helper
 
+# Internal prefix.
+@test 'report error and exit with 2 when the internal prefix is detected in the environment' {
+  export _d8e1_=1 _d8e1_a=1
+  run "$EXEC"
+  [ "$status" -eq 2 ]
+  [ "${#lines[@]}" -gt 1 ]
+  [ "${lines[0]}" == "Error: no variable with the prefix \`_d8e1_'\ should exist in the environment!" ]
+  [ "${lines[1]}" == '_d8e1_' ]
+  [ "${lines[2]}" == '_d8e1_a' ]
+}
+
 # Input from file.
 @test 'FILE template: running without arguments prints usage' {
   run "$EXEC"
@@ -61,7 +72,6 @@ load test-helper
 @test 'STDIN template: output to STDOUT when no destination is specified' {
   local template="$TMP/static.tmpl"
   run bash -c 'cat '"$template"' | "$EXEC"'
-  echo "$output"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }

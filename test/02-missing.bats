@@ -3,10 +3,10 @@
 load test-helper
 fixtures env
 
+# Test option.
 test_m_missing () {
   load "$FIXTURE_ROOT/missing.bash"
   local template="$TMP/dynamic.tmpl"
-
   run "$EXEC" $1 "$template"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -gt 1 ]
