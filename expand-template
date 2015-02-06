@@ -33,6 +33,9 @@ _d8e1_OPT_EXPAND=0
 # Do not expand variables preceded by a backslash (-x, --escape).
 _d8e1_OPT_ESCAPE=0
 
+# Print a list of variable referenced and escaped (-s, --summary).
+_d8e1_OPT_SUMMARY=0
+
 
 ################################################################################
 #                                 HANDLE OPTIONS
@@ -58,6 +61,7 @@ Options:
   -m, --missing     Report undefined variables and exit.
   -e, --no-expand   Do not expand variables that are not defined.
   -x, --escape      Allow escaping variable references with a backslash.
+  -s, --summary     Print a list of referenced and escaped variables and exit.
 
 Variable References:
   References of the form \`\$var' and \`\${var}' can be substituted with the value
@@ -98,8 +102,8 @@ Caveat:
 EOUSAGE
 }
 
-_d8e1_TEMP=$(getopt --options m,e,x \
-                    --long missing,no-expand,escape \
+_d8e1_TEMP=$(getopt --options m,e,x,s \
+                    --long missing,no-expand,escape,summary \
                     --name "$(basename "$0")" -- "$@")
 
 if [ $? != 0 ]; then echo "Terminating..." >&2; exit 1; fi
@@ -110,6 +114,7 @@ while true; do
     -m|--missing) _d8e1_OPT_MISSING=1; shift;;
     -e|--no-expand) _d8e1_OPT_EXPAND=1; shift;;
     -x|--escape) _d8e1_OPT_ESCAPE=1; shift;;
+    -s|--summary) _d8e1_OPT_SUMMARY=1; shift;;
     --) shift; break;;
     *) echo "Internal error!"; exit 1;;
   esac
@@ -167,6 +172,7 @@ fi
 #   none
 # Arguments:
 #   $1 - template string
+#   $2 - enable escaping [ 1, Yes ]
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -174,23 +180,74 @@ fi
 #   1 - otherwise
 get_referenced () {
   local input="$1"
+  local do_escape="${2:-1}"
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
 
   local ref_vars
-  ref_vars=( $(
-    # 1. remove braces around variable names (${var} -> $var)
-    # 2. surround variable references with newlines ($var   -> \n$var\n)
-    # 3. select lines that contain only a reference, w/o leading $
-    # 4. remove duplicates
-    echo "$input" \
-      | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
-               -e 's/\$'"${name}"'/\n&\n/g' \
-      | sed -nr 's/\$('"${name}"')/\1/p' \
-      | sort -u
-    ) )
+  if [ "$do_escape" == 1 ]; then
+    ref_vars=( $(
+      # 1. remove braces around variable names (${var} -> $var)
+      # 2. surround non-escaped variable references with newlines ((even x \)$var -> \n(even x \)$var\n)
+      # 3. select lines that contain only an escaped reference, w/o leading (even * \)$
+      # 4. remove duplicates
+      echo "$input" \
+        | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
+                 -e 's/(^|[^\])(\\\\)*(\$'"${name}"')/\1\n\2\3\n/g' \
+        | sed -nr 's/^(\\\\)*\$('"${name}"')$/\2/p' \
+        | sort -u
+      ) )
+  else
+    ref_vars=( $(
+      # 1. remove braces around variable names (${var} -> $var)
+      # 2. surround variable references with newlines ($var -> \n$var\n)
+      # 3. select lines that contain only a reference, w/o leading $
+      # 4. remove duplicates
+      echo "$input" \
+        | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
+                 -e 's/\$'"${name}"'/\n&\n/g' \
+        | sed -nr 's/^\$('"${name}"')$/\1/p' \
+        | sort -u
+      ) )
+  fi
 
   printf "%s\n" "${ref_vars[@]}"
   [ "${#ref_vars[@]}" -ne 0 ]
+}
+
+# Output the list of escaped variable references in the given template. The
+# output contains one variable name per line, and can be directly captured into
+# an array by the caller. For example:
+#
+#   vars=( "$(get_escaped "$input")" )
+#
+# Globals:
+#   none
+# Arguments:
+#   $1 - template string
+# Output:
+#   STDOUT - variable names separated by newlines
+# Returns:
+#   0 - list is not empty
+#   1 - otherwise
+get_escaped () {
+  local input="$1"
+  local name='[a-zA-Z_][a-zA-Z_0-9]*'
+
+  local esc_vars
+  esc_vars=( $(
+    # 1. remove braces around variable names (${var} -> $var)
+    # 2. surround escaped variable references with newlines (\$var -> \n\$var\n)
+    # 3. select lines that contain only an escaped reference, w/o leading \$
+    # 4. remove duplicates
+    echo "$input" \
+      | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
+               -e 's/((^|[^\])(\\\\)*)(\\\$'"${name}"')/\1\n\4\n/g' \
+      | sed -nr 's/^\\\$('"${name}"')$/\1/p' \
+      | sort -u
+    ) )
+
+  printf "%s\n" "${esc_vars[@]}"
+  [ "${#esc_vars[@]}" -ne 0 ]
 }
 
 # Outputs the list of variables referenced in the given template that are not
@@ -274,7 +331,6 @@ escape () {
          -e 's/(\$)(\\\{'"${name}"'\})/\1\\\2/g' \
          -e 's/((^|[^\])(\\\\)*)(\\)\$('"$name"')/\1$\4\5/g' \
          -e 's/((^|[^\])(\\\\)*)(\\)\$(\{'"$name"'\})/\1$\4\5/g'
-  # TODO: add brace support from here to all the way down!
 }
 
 # Un-escape the given string. This function is necessary after expanding.
@@ -325,6 +381,22 @@ escape_vars () {
 ################################################################################
 #                                      MAIN
 ################################################################################
+
+if [ "$_d8e1_OPT_SUMMARY" -eq 1 ]; then
+  if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then
+    _d8e1_ESCAPED=( $(get_escaped "$_d8e1_INPUT") )
+    if [ "$?" -eq 0 ]; then
+      echo "Escaped variables:"
+      printf "%s\n" "${_d8e1_ESCAPED[@]}"
+    fi
+  fi
+  _d8e1_REFERENCED=( $(get_referenced "$_d8e1_INPUT" $_d8e1_OPT_ESCAPE) )
+  if [ "$?" -eq 0 ]; then
+    echo "Referenced variables:"
+    printf "%s\n" "${_d8e1_REFERENCED[@]}"
+  fi
+  exit 0
+fi
 
 if [ "$_d8e1_OPT_MISSING" -eq 1 ]; then
   _d8e1_MISS=( $(get_missing "$_d8e1_INPUT") )

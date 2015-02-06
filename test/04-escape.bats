@@ -112,3 +112,11 @@ test_escape_var () {
   [ "$status" -eq 0 ]
   [ "$output" == "$var" ]
 }
+
+# Testing with other options.
+@test "escaped variables are not reported by -e when they are missing" {
+  export var='\\'
+  run bash -c "echo '$var \$missing' | \"$EXEC\" -xe"
+  [ "$status" -eq 0 ]
+  [ "$output" == '\ $missing' ]
+}
