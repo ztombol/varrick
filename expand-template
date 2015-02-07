@@ -58,8 +58,8 @@ Destination:
          template's name minus \`.tmpl' suffix if exists.
 
 Options:
-  -m, --missing     Report undefined variables and exit.
-  -e, --no-expand   Do not expand variables that are not defined.
+  -m, --missing     Report undefined variables and exit. Forbids \`-e'.
+  -e, --no-expand   Do not expand variables that are not defined. Forbids \`-m'.
   -x, --escape      Allow escaping variable references with a backslash.
   -s, --summary     Print a list of referenced and escaped variables and exit.
 
@@ -119,6 +119,12 @@ while true; do
     *) echo "Internal error!"; exit 1;;
   esac
 done
+
+# Options --missing and --no-expand are mutually exclusive.
+if [ "$_d8e1_OPT_MISSING" -eq 1 ] && [ "$_d8e1_OPT_EXPAND" -eq 1 ]; then
+  echo "Error: \`--missing' (-m) and \`--no-expand' (-e) cannot be specified at the same time!"
+  exit 1
+fi
 
 
 ################################################################################

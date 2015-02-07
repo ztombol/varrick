@@ -19,3 +19,9 @@ test_n_no-expand () {
 @test "\`--no-expand' does not expand missing variables" {
   test_n_no-expand --no-expand
 }
+
+@test "\`--no-expand' and \`--missing' are mutually exclusive" {
+  run bash -c "echo '' | \"$EXEC\" --no-expand --missing"
+  [ "$status" -eq 1 ]
+  [ "$output" == "Error: \`--missing' (-m) and \`--no-expand' (-e) cannot be specified at the same time!" ]
+}

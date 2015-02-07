@@ -113,7 +113,7 @@ test_escape_var () {
   [ "$output" == "$var" ]
 }
 
-# Testing with other options.
+# Testing with other options (tests get_referenced).
 @test "escaped variables are not reported by -e when they are missing" {
   export var='\\'
   run bash -c "echo '$var \$missing' | \"$EXEC\" -xe"
