@@ -52,18 +52,6 @@ test_escape_var () {
   [ "$output" == '${var}' ]
 }
 
-@test 'escape internal representation of an escaped reference ($\var -> $\var)' {
-  test_escape_var '$\var'
-  [ "$status" -eq 0 ]
-  [ "$output" == '$\var' ]
-}
-
-@test 'escape internal representation of an escaped braced reference ($\{var} -> $\{var})' {
-  test_escape_var '$\{var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == '$\{var}' ]
-}
-
 @test 'escaping the escape character (\\ -> \)' {
   test_escape_var '\\'
   [ "$status" -eq 0 ]

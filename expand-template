@@ -332,16 +332,11 @@ get_defined () {
 escape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
 
-  # FIXME(ztombol): #1 should be done by the user.
-  # 1. $\var   -> $\\var
-  # 2. $\{var} -> $\\{var}
-  # 3. (even x \)\$var   -> (even x \)$\var
+  # 1. (even x \)\$var   -> (even x \)$\var
   #    (even x \)$var    -x
-  # 4. (even x \)\${var} -> (even x \)$\{var}
+  # 2. (even x \)\${var} -> (even x \)$\{var}
   #    (even x \)${var}  -x
-  sed -r -e 's/(\$)(\\'"${name}"')/\1\\\2/g' \
-         -e 's/(\$)(\\\{'"${name}"'\})/\1\\\2/g' \
-         -e 's/((^|[^\])(\\\\)*)(\\)\$('"$name"')/\1$\4\5/g' \
+  sed -r -e 's/((^|[^\])(\\\\)*)(\\)\$('"$name"')/\1$\4\5/g' \
          -e 's/((^|[^\])(\\\\)*)(\\)\$(\{'"$name"'\})/\1$\4\5/g'
 }
 
