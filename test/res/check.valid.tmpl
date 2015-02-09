@@ -1,0 +1,31 @@
+#
+# Not references.
+#
+
+# regex #1:
+\\
+b\\a1
+$\\a1
+$\\{a1}
+
+# regex #2:
+\\$
+b\\$-
+
+# regex #3:
+\\${
+b\\${-
+\\${-}
+
+# regex #4:
+\\${a1
+b\\${a1-
+\\${a1-}
+
+#
+# References. These should not appear in the output.
+#
+\\$a1
+\\${a1}
+b\\$a1 b
+b\\${a1}b
