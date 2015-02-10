@@ -47,29 +47,42 @@ _d8e1_OPT_CHECK=0
 usage () {
   cat<<EOUSAGE
 Usage:
-  $(basename "$0") [options] <template> [destination]
-  ... | $(basename "$0") [options] [destination]
+  $(basename "$0") [OPTION]... <TEMPLATE> [DESTINATION]
+  ... | $(basename "$0") [OPTION]... [DESTINATION]
+
+Description:
+  Substitutes the values of environment variables in place of shell format
+  strings of the form \`\$var' and \`\${var}'. It uses \`envsubst' internally
+  and adds a few convenient features to it, e.g. escaping support.
 
 Arguments:
-  template   Template file to expand, can be read from STDIN instead.
+  TEMPLATE
+    Template file to expand. Can be read from STDIN if not specified.
 
-Destination:
-  Defaults to STDOUT if not specified.
-
-  file   Path of resulting file.
-  dir    Path of directory for the resulting file, filename is set to the
-         template's name minus \`.tmpl' suffix if exists.
+  DESTINATION
+    Where to put the expanded template. In case the given path is as an existing
+    directory, the output is saved in that directory. The filename is the
+    template's filename, unless it ends with \`.tmpl' suffix in which case the
+    suffix is removed. Otherwise the destination is interpreted as a file and
+    the result is saved at the given path. Parent directories have to exist.
+    Defaults to STDOUT.
 
 Options:
-  -m, --missing     Report undefined variables and exit. Forbids \`-e'.
-  -e, --no-expand   Do not expand variables that are not defined. Forbids \`-m'.
-  -x, --escape      Allow escaping variable references with a backslash.
-  -s, --summary     Print a list of referenced and escaped variables and exit.
-  -c, --check       Look for invalid escape sequences and exit.
+  -c, --check
+    Look for invalid escape sequences and exit.
 
-Variable References:
-  References of the form \`\$var' and \`\${var}' can be substituted with the value
-  of the environment variable of the same name.
+  -e, --no-expand
+    Do not expand variables that are not defined. Mutually exclusive with \`-m'.
+
+  -m, --missing
+    Report undefined variables and exit. Mutually exclusive with \`-e'.
+
+  -s, --summary
+    Print a list of referenced and escaped variables and exit.
+
+  -x, --escape
+    Allow escaping variable references with a backslash. See the \`Escaping'
+    section below.
 
 Escaping:
   Variable references can be escaped to prevent expansion using a slash \`\\'.
@@ -78,30 +91,32 @@ Escaping:
     $ echo '\\\$name' | $(basename "$0")
     \$name
 
-  If the escape character appears anywhere in the template, it has to be
-  escaped.
+  If a slash appears in a non-escping position, i.e. not immediately before a
+  variable reference, it has to be escaped.
 
     $ echo 'text \\\\ text' | $(basename "$0")
     text \\ text
 
-  Escaping the escape character in the value of substituted variables is not
-  necessary.
-
-  When turning a file into template, it is useful to first escape all slashes
-  before inserting variable references.
+  When turning a file into template, it is recommended to first escape all
+  slashes before inserting variable references.
 
     $ sed 's/\\\\/\\\\\\\\/g' < config.conf > config.tmpl
+
+  Escaping slashes in the substituted values is not necessary.
+
+Caveat:
+  $(basename "$0") exits with an error when a variable starting with the prefix
+  \`_d81e_' is declared in the environment. This is due to the fact that such
+  variables are used internally and allowing them in the environment would cause
+  incosistent behaviour and hard to find errors.
 
 Exit status:
   The utility exits with 0 on success. When an error is detected the exit status
   is 1. When the internally used variable name prefix appears in the environment
   the utility exits with 2 (see \`Caveat' section).
 
-Caveat:
-  The utility immediately exits with an error when a variable starting with the
-  prefix \`_d8e1_' is declared in the environment. This is due to the fact that
-  such variables are used internally and allowing them in the environment could
-  cause hard to find errors.
+See also:
+  envsubst(1)
 
 EOUSAGE
 }
