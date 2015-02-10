@@ -181,6 +181,10 @@ if tty -s <&0; then
     _d8e1_DEST="$([ -d "$2" ] && echo "$2/$(basename "${1%.tmpl}")" || echo "$2")"
   fi
 
+  if [ ! -e "$1" ]; then
+    echo "Error: no such file \`$1'"
+    exit 1
+  fi
   _d8e1_INPUT="$(cat "$1")"
 else
   # Template read from STDIN.

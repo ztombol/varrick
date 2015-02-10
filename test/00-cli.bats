@@ -55,6 +55,13 @@ load test-helper
 }
 
 # Input from file.
+@test 'FILE template: display error and exit if the template file does not exist' {
+  local template="$TMP/does_not_exist.tmpl"
+  run "$EXEC" "$template"
+  [ "$status" -eq 1 ]
+  [ "$output" == "Error: no such file \`$template'" ]
+}
+
 @test 'FILE template: running without arguments prints usage' {
   run "$EXEC"
   [ "$status" -eq 1 ]
