@@ -17,88 +17,41 @@ test_x_escape () {
   test_x_escape --escape
 }
 
-# Test escaping on template `$1'.
-test_escape () {
-  run bash -c "echo '$1' | \"$EXEC\" -x"
-}
-
-# Test escaping on template `$1' when `$var' is set to `value'.
-test_escape_var () {
+# Test correctness.
+@test 'escaping works correctly' {
+  local template="$TMP/escape.tmpl"
   export var=value
-  test_escape "$1"
-}
-
-@test 'expanding a reference when escaping is enabled ($var -> value)' {
-  test_escape_var '$var'
+  run "$EXEC" -x "$template"
   [ "$status" -eq 0 ]
-  [ "$output" == 'value' ]
-}
+  # TODO(ztombol): BATS does not save empty lines in `$lines'. In case this
+  #                behaviour is changed upstream, adjust the line numbers
+  #                below.
+  #[ "${#lines[@]}" -eq 23  ]
+  [ "${#lines[@]}" -eq 18  ]
 
-@test 'expanding a braced reference when escaping is enabled (${var} -> value)' {
-  test_escape_var '${var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == 'value' ]
-}
+  # expanding a reference
+  [ "${lines[ 1]}" == 'value' ]
+  [ "${lines[ 2]}" == 'value' ]
 
-@test 'do not expand an escaped reference (\$var -> $var)' {
-  test_escape_var '\$var'
-  [ "$status" -eq 0 ]
-  [ "$output" == '$var' ]
-}
+  # do not expand an escaped reference
+  [ "${lines[ 4]}" == '$var' ]
+  [ "${lines[ 5]}" == '${var}' ]
 
-@test 'do not expand an escaped braced reference (\${var} -> ${var})' {
-  test_escape_var '\${var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == '${var}' ]
-}
+  # escaping the escape character
+  [ "${lines[ 7]}" == '\' ]
 
-@test 'escaping the escape character (\\ -> \)' {
-  test_escape_var '\\'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\' ]
-}
+  # expand a reference after an escaped escape character
+  [ "${lines[ 9]}" == '\value' ]
+  [ "${lines[10]}" == '\value' ]
 
-@test 'expand a reference after an escaped escape character (\\$var -> \value)' {
-  test_escape_var '\\$var'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\value' ]
-}
+  # escaping is left-associative
+  [ "${lines[12]}" == '\$var' ]
+  [ "${lines[13]}" == '\${var}' ]
+  [ "${lines[14]}" == '\\value' ]
+  [ "${lines[15]}" == '\\value' ]
 
-@test 'expand a braced reference after an escaped escape character (\\${var} -> \value)' {
-  test_escape_var '\\${var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\value' ]
-}
-
-@test 'escaping is left-associative (\\\$var -> \$var)' {
-  test_escape_var '\\\$var'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\$var' ]
-}
-
-@test 'escaping is left-associative (\\\${var} -> \${var})' {
-  test_escape_var '\\\${var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\${var}' ]
-}
-
-@test 'escaping is left-associative (\\\\$var -> \\value)' {
-  test_escape_var '\\\\$var'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\\value' ]
-}
-
-@test 'escaping is left-associative (\\\\${var} -> \\value)' {
-  test_escape_var '\\\\${var}'
-  [ "$status" -eq 0 ]
-  [ "$output" == '\\value' ]
-}
-
-@test "escaping the escape character in substituted values" {
-  export var='\\'
-  test_escape '$var'
-  [ "$status" -eq 0 ]
-  [ "$output" == "$var" ]
+  # escaping the escape character in substituted values
+  [ "${lines[17]}" == '\' ]
 }
 
 # Testing with other options (tests get_referenced).

@@ -1,0 +1,23 @@
+# expanding a reference
+$var
+${var}
+
+# do not expand an escaped reference
+\$var
+\${var}
+
+# escaping the escape character
+\\
+
+# expand a reference after an escaped escape character
+\\$var
+\\${var}
+
+# escaping is left-associative
+\\\$var
+\\\${var}
+\\\\$var
+\\\\${var}
+
+# escaping the escape character in substituted values
+\\
