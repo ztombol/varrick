@@ -44,8 +44,22 @@ _d8e1_OPT_CHECK=0
 #                                 HANDLE OPTIONS
 ################################################################################
 
-usage () {
+print_version () {
+  local version='0.1.0'
+  echo "$(basename "$0") v$version"
+}
+
+print_usage () {
   cat<<EOUSAGE
+$(print_version)
+Usage: $(basename "$0") [OPTION]... <TEMPLATE> [DESTINATION]
+       ... | $(basename "$0") [OPTION]... [DESTINATION]
+See \`$(basename "$0") --help' for more.
+EOUSAGE
+}
+print_help () {
+  cat<<EOHELP
+$(print_version)
 Usage:
   $(basename "$0") [OPTION]... <TEMPLATE> [DESTINATION]
   ... | $(basename "$0") [OPTION]... [DESTINATION]
@@ -118,11 +132,11 @@ Exit status:
 See also:
   envsubst(1)
 
-EOUSAGE
+EOHELP
 }
 
-_d8e1_TEMP=$(getopt --options m,e,x,s,c \
-                    --long missing,no-expand,escape,summary,check \
+_d8e1_TEMP=$(getopt --options c,e,h,m,s,u,v,x \
+                    --long check,escape,help,missing,no-expand,summary,usage,version \
                     --name "$(basename "$0")" -- "$@")
 
 if [ $? != 0 ]; then echo "Terminating..." >&2; exit 1; fi
@@ -130,11 +144,14 @@ eval set -- "$_d8e1_TEMP"
 
 while true; do
   case "$1" in
-    -m|--missing) _d8e1_OPT_MISSING=1; shift;;
-    -e|--no-expand) _d8e1_OPT_EXPAND=1; shift;;
-    -x|--escape) _d8e1_OPT_ESCAPE=1; shift;;
-    -s|--summary) _d8e1_OPT_SUMMARY=1; shift;;
     -c|--check) _d8e1_OPT_CHECK=1; shift;;
+    -e|--no-expand) _d8e1_OPT_EXPAND=1; shift;;
+    -h|--help) print_help; exit 0; shift;;
+    -m|--missing) _d8e1_OPT_MISSING=1; shift;;
+    -s|--summary) _d8e1_OPT_SUMMARY=1; shift;;
+    -u|--usage) print_usage; exit 0; shift;;
+    -v|--version) print_version; exit 0; shift;;
+    -x|--escape) _d8e1_OPT_ESCAPE=1; shift;;
     --) shift; break;;
     *) echo "Internal error!"; exit 1;;
   esac
@@ -155,7 +172,7 @@ unset _d8e1_DEST
 if tty -s <&0; then
   # Template read from file.
   if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
-    usage
+    print_usage
     exit 1
   fi
 
@@ -168,7 +185,7 @@ if tty -s <&0; then
 else
   # Template read from STDIN.
   if [ "$#" -gt 1 ]; then
-    usage
+    print_usage
     exit 1
   fi
 

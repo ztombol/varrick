@@ -13,17 +13,60 @@ load test-helper
   [ "${lines[2]}" == '_d8e1_a' ]
 }
 
+# General.
+@test "\`-u' displays usage information" {
+  run "$EXEC" -u
+  [ "$status" -eq 0 ]
+  [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
+}
+
+@test "\`--usage' displays usage information" {
+  run "$EXEC" --usage
+  [ "$status" -eq 0 ]
+  [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
+}
+
+@test "\`-h' displays help" {
+  run "$EXEC" -h
+  [ "$status" -eq 0 ]
+  [ "${#lines[@]}" -gt 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
+}
+
+@test "\`--help' displays help" {
+  run "$EXEC" --help
+  [ "$status" -eq 0 ]
+  [ "${#lines[@]}" -gt 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
+}
+
+@test "\`-v' displays version information" {
+  run "$EXEC" -v
+  [ "$status" -eq 0 ]
+  [ $(expr "$output" : '^.* v[0-9].[0-9].[0-9]$') -ne 0 ]
+}
+
+@test "\`--version' displays version information" {
+  run "$EXEC" --version
+  [ "$status" -eq 0 ]
+  [ $(expr "$output" : '^.* v[0-9].[0-9].[0-9]$') -ne 0 ]
+}
+
 # Input from file.
 @test 'FILE template: running without arguments prints usage' {
   run "$EXEC"
   [ "$status" -eq 1 ]
-  [ $(expr "${lines[0]}" : '^Usage:') -ne 0 ]
+  [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test 'FILE template: running with more than 2 arguments prints usage' {
   run "$EXEC" arg1 arg2 arg3
   [ "$status" -eq 1 ]
-  [ $(expr "${lines[0]}" : '^Usage:') -ne 0 ]
+  [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test 'FILE template: output to STDOUT when no destination is specified' {
@@ -66,7 +109,8 @@ load test-helper
 @test 'STDIN template: running with more than 1 argument prints usage' {
   run bash -c "echo '' | $EXEC arg1 arg2"
   [ "$status" -eq 1 ]
-  [ $(expr "${lines[0]}" : '^Usage:') -ne 0 ]
+  [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test 'STDIN template: output to STDOUT when no destination is specified' {
