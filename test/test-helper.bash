@@ -8,7 +8,7 @@ fixtures () {
 setup () {
   export TMP="$(mktemp --directory --tmpdir="$BATS_TMPDIR" "bats-expand-template-$BATS_TEST_NAME.XXXXXXXXXX")"
   cp -R "$BATS_TEST_DIRNAME/res"/* "$TMP"
-  export EXEC="$BATS_TEST_DIRNAME/../expand-template"
+  export EXEC="$BATS_TEST_DIRNAME/../bin/expand-template"
 }
 
 # Delete the temporary directory.
