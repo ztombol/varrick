@@ -20,38 +20,37 @@ get_referenced () {
   local input="$1"
   local do_escape="${2:-1}"
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
+  local ref='\$('"${name}"'|\{'"${name}"'\})'
 
   local ref_vars
   if [ "$do_escape" == 1 ]; then
-    # FIXME(ztombol): Removing braces can cause problems if [a-zA-Z_0-9] follows
-    #                 the reference. For example `${var}s ...' will refer to
-    #                 `$vars' instead of `$var'.
     ref_vars=( $(
-      # 1. remove braces around variable names (${var} -> $var)
-      # 2. surround non-escaped variable references with newlines ((even x \)$var -> \n(even x \)$var\n)
-      # 3. select lines that contain only an escaped reference, w/o leading (even * \)$
+      # 1. surround non-escaped references with newlines: \$var   -> \n\$var\n
+      #                                                   \${var} -> \n\${var}\n
+      # 2. select lines that contain only a non-escaped reference: \$var   -> var
+      #                                                            \${var} -> {var}
+      # 3. remove braces: {var} -> var
       # 4. remove duplicates
       echo "$input" \
-        | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
-                 -e 's/(^|[^\])(\\\\)*(\$'"${name}"')/\1\n\2\3\n/g' \
-        | sed -nr 's/^(\\\\)*\$('"${name}"')$/\2/p' \
+        | sed -r 's/((^|[^\])(\\\\)*)('"${ref}"')/\1\n\4\n/g' \
+        | sed -rn 's/^'"${ref}"'$/\1/p' \
+        | tr -d '{}' \
         | sort -u
-      ) )
+    ) )
   else
-    # FIXME(ztombol): Removing braces can cause problems if [a-zA-Z_0-9] follows
-    #                 the reference. For example `${var}s ...' will refer to
-    #                 `$vars' instead of `$var'.
     ref_vars=( $(
-      # 1. remove braces around variable names (${var} -> $var)
-      # 2. surround variable references with newlines ($var -> \n$var\n)
-      # 3. select lines that contain only a reference, w/o leading $
+      # 1. surround references with newlines: \$var   -> \n\$var\n
+      #                                       \${var} -> \n\${var}\n
+      # 2. select lines that contain only a reference: \$var   -> var
+      #                                                \${var} -> {var}
+      # 3. remove braces: {var} -> var
       # 4. remove duplicates
       echo "$input" \
-        | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
-                 -e 's/\$'"${name}"'/\n&\n/g' \
-        | sed -nr 's/^\$('"${name}"')$/\1/p' \
+        | sed -r 's/'"${ref}"'/\n&\n/g' \
+        | sed -rn 's/^'"${ref}"'$/\1/p' \
+        | tr -d '{}' \
         | sort -u
-      ) )
+    ) )
   fi
 
   printf "%s\n" "${ref_vars[@]}"
@@ -76,20 +75,20 @@ get_referenced () {
 get_escaped () {
   local input="$1"
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
+  local ref='\$('"${name}"'|\{'"${name}"'\})'
 
   local esc_vars
   esc_vars=( $(
-    # FIXME(ztombol): Removing braces can cause problems if [a-zA-Z_0-9] follows
-    #                 the reference. For example `${var}s ...' will refer to
-    #                 `$vars' instead of `$var'.
-    # 1. remove braces around variable names (${var} -> $var)
-    # 2. surround escaped variable references with newlines (\$var -> \n\$var\n)
-    # 3. select lines that contain only an escaped reference, w/o leading \$
+    # 1. surround escaped references with newlines: \$var   -> \n\$var\n
+    #                                               \${var} -> \n\${var}\n
+    # 2. select lines that contain only an escaped reference: \$var   -> var
+    #                                                         \${var} -> {var}
+    # 3. remove braces: {var} -> var
     # 4. remove duplicates
     echo "$input" \
-      | sed -r -e 's/\$\{('"${name}"')\}/$\1/g' \
-               -e 's/((^|[^\])(\\\\)*)(\\\$'"${name}"')/\1\n\4\n/g' \
-      | sed -nr 's/^\\\$('"${name}"')$/\1/p' \
+      | sed -r 's/((^|[^\])(\\\\)*)(\\)('"${ref}"')/\1\n\4\5\n/g' \
+      | sed -rn 's/^\\'"${ref}"'$/\1/p' \
+      | tr -d '{}' \
       | sort -u
     ) )
 
@@ -108,6 +107,7 @@ get_escaped () {
 #   All environmental variables.
 # Arguments:
 #   $1 - template string
+#   $2 - enable escaping [ 1, Yes ]
 # Outputs:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -115,10 +115,13 @@ get_escaped () {
 #   1 - otherwise
 get_missing () {
   local input="$1"
+  local do_escape="${2:-1}"
+
   local temp_vars miss_vars
-  ref_vars=( $(get_referenced "$input") )
+  ref_vars=( $(get_referenced "$input" "$do_escape") )
   miss_vars=( $(comm -23 <(printf "%s\n" "${ref_vars[@]}") \
                          <(printf "%s\n" "$(compgen -e | sort)")) )
+
   printf "%s\n" "${miss_vars[@]}"
   [ "${#miss_vars[@]}" -ne 0 ]
 }
@@ -135,6 +138,7 @@ get_missing () {
 #   All environmental variables.
 # Arguments:
 #   $1 - template string
+#   $2 - enable escaping [ 1, Yes ]
 # Outputs:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -142,61 +146,61 @@ get_missing () {
 #   1 - otherwise
 get_defined () {
   local input="$1"
-  local temp_vars defined_vars
+  local do_escape="${2:-1}"
 
-  ref_vars=( $(get_referenced "$input") )
+  local temp_vars defined_vars
+  ref_vars=( $(get_referenced "$input" "$do_escape") )
   defined_vars=( $(comm -12 <(printf "%s\n" "${ref_vars[@]}") \
                             <(printf "%s\n" "$(compgen -e | sort)")) )
+
   printf "%s\n" "${defined_vars[@]}"
   [ "${#defined_vars[@]}" -ne 0 ]
 }
 
-# Escape the template string read from STDIN. This function is necessary before
-# expanding.
+# Escape the template read from STDIN to prevent `envsubst' to expand escaped
+# references. This involves a simple transformation of swapping the first two
+# characters of escaped references, i.e. `\$' to `$\'.
 #
 # Globals:
 #   none
 # Arguments:
 #   none
-# Inputs:
+# Input:
 #   STDIN - template string
 # Outputs:
-#   STDOUT - escaped text
+#   STDOUT - escaped template string
 # Returns:
-#   0 - success
-#   1 - otherwise
+#   none
 escape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
+  local ref='\$('"${name}"'|\{'"${name}"'\})'
 
-  # 1. (even x \)\$var   -> (even x \)$\var
-  #    (even x \)$var    -x
-  # 2. (even x \)\${var} -> (even x \)$\{var}
-  #    (even x \)${var}  -x
-  sed -r -e 's/((^|[^\])(\\\\)*)(\\)\$('"$name"')/\1$\4\5/g' \
-         -e 's/((^|[^\])(\\\\)*)(\\)\$(\{'"$name"'\})/\1$\4\5/g'
+  # Transform escaped references: \$var   -> $\var
+  #                               \${var} -> $\{var}
+  sed -r 's/((^|[^\])(\\\\)*)(\\)'"$ref"'/\1$\4\5/g'
 }
 
-# Un-escape the given string. This function is necessary after expanding.
+# Un-escape the template read from STDIN by removing reference and slash
+# escaping slashes.
 #
 # Globals:
 #   none
 # Arguments:
 #   none
-# Inputs:
+# Input:
 #   STDIN - template string
 # Outputs:
-#   STDOUT - un-escaped text
+#   STDOUT - un-escaped template string
 # Returns:
-#   0 - success
-#   1 - otherwise
+#   none
 unescape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
+  local ref_no_ds='('"${name}"'|\{'"${name}"'\})'
 
-  # 1. $\var -> $var
-  # 2. $\{var} -> ${var}
-  # 3. \\ -> \
-  sed -r -e 's/(\$)\\('"${name}"')/\1\2/g' \
-         -e 's/(\$)\\(\{'"${name}"'\})/\1\2/g' \
+  # 1. Remove slash from escaped references: $\var   -> $var
+  #                                          $\{var} -> ${var}
+  # 2. Remove slash from escaped slashes: \\ -> \
+  sed -r -e 's/\$\\'"${ref_no_ds}"'/\$\1/g' \
          -e 's/\\\\/\\/g'
 }
 
@@ -211,8 +215,7 @@ unescape () {
 # Outputs:
 #   none
 # Returns:
-#   0 - success
-#   1 - otherwise
+#   none
 escape_vars () {
   for _d8e1_var in $@; do
     # `\' -> `\\'
@@ -230,7 +233,7 @@ escape_vars () {
 # Input:
 #   none
 # Outputs:
-#   STDOUT - escaping errors with line numbers if any
+#   STDOUT - lines containing invalid escaping along with their numbers
 # Returns:
 #   0 - correct escaping
 #   1 - otherwise
