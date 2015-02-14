@@ -1,12 +1,14 @@
 #!/usr/bin/env bats
 
-load test-helper
+load lib-test-helper
+fixtures lib
+
 LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
 . "$LIB_DIR/expand-template"
 
 # Correctness.
 @test 'check_esc() prints error and lines containing invalid escapes' {
-  local template="$(cat "$TMP/escape.invalid.tmpl")"
+  local template="$(cat "$FIXTURE_ROOT/escape.invalid.tmpl")"
   run check_esc "$template"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 33 ]
@@ -57,8 +59,8 @@ LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
   [ "${lines[32]}" == '43: a\\\${a-' ]
 }
 
-@test 'check_esc() prints OK message when ithere are no invalid escapes' {
-  local template="$(cat "$TMP/escape.valid.tmpl")"
+@test 'check_esc() prints OK message when there are no invalid escapes' {
+  local template="$(cat "$FIXTURE_ROOT/escape.valid.tmpl")"
   run check_esc "$template"
   [ "$status" -eq 0 ]
   [ "$output" == 'Everything looks good!' ]

@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
-load test-helper
+load lib-test-helper
+
 LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
 
 # Correctness.

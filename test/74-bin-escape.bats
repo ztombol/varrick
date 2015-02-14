@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load test-helper
+load bin-test-helper
 
 # Test option.
 test_x_escape () {

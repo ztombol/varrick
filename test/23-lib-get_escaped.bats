@@ -1,12 +1,14 @@
 #!/usr/bin/env bats
 
-load test-helper
+load lib-test-helper
+fixtures lib
+
 LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
 . "$LIB_DIR/expand-template"
 
 # Correctness.
 @test 'get_escaped() prints list of escaped references' {
-  local template="$(cat "$TMP/reference.tmpl")"
+  local template="$(cat "$FIXTURE_ROOT/reference.tmpl")"
   run get_escaped "$template"
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 12 ]

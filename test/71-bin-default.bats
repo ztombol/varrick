@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load test-helper
+load bin-test-helper
 
 # Test default behaviour.
 @test 'expand reference of defined variable to its value' {

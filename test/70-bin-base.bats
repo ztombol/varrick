@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
-load test-helper
+load bin-test-helper
+fixtures bin
 
 # Internal prefix.
 @test 'report error when the internal prefix is detected in the environment' {
@@ -77,14 +78,14 @@ load test-helper
 }
 
 @test 'FILE template: output to STDOUT when no destination is specified' {
-  local template="$TMP/static.tmpl"
+  local template="$FIXTURE_ROOT/static.tmpl"
   run "$EXEC" "$template"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
 @test 'FILE template: output to file when destination is not a directory' {
-  local template="$TMP/static.tmpl"
+  local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   run "$EXEC" "$template" "$expanded"
   [ "$status" -eq 0 ]
@@ -93,9 +94,10 @@ load test-helper
 }
 
 @test "FILE template: output to file when destination is a directory and template ends in \`.tmpl'" {
-  local template="$TMP/static.tmpl"
+  local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
-  run "$EXEC" "$template" "$TMP"
+  local dest="$(dirname "$expanded")"
+  run "$EXEC" "$template" "$dest"
   [ "$status" -eq 0 ]
   [ -f "$expanded" ]
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
@@ -104,9 +106,10 @@ load test-helper
 @test "FILE template: output to file when destination is a directory and template does not end in \`.tmpl'" {
   local template="$TMP/static.template"
   local expanded="$TMP/dest/static.template"
-  mv "$TMP/static.tmpl" "$template"
-  mkdir "$TMP/dest"
-  run "$EXEC" "$template" "$TMP/dest"
+  local dest="$(dirname "$expanded")"
+  cp "$FIXTURE_ROOT/static.tmpl" "$template"
+  mkdir "$dest"
+  run "$EXEC" "$template" "$dest"
   [ "$status" -eq 0 ]
   [ -f "$expanded" ]
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
@@ -114,21 +117,21 @@ load test-helper
 
 # Input from STDIN.
 @test 'STDIN template: running with more than 1 argument prints usage' {
-  run bash -c "echo '' | $EXEC arg1 arg2"
+  run bash -c "echo '' | '$EXEC' arg1 arg2"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 4 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test 'STDIN template: output to STDOUT when no destination is specified' {
-  local template="$TMP/static.tmpl"
+  local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "cat '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
 @test 'STDIN template: output to file when destination is not a directory' {
-  local template="$TMP/static.tmpl"
+  local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   run bash -c "cat '$template' | '$EXEC' '$expanded'"
   [ "$status" -eq 0 ]

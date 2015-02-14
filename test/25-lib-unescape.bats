@@ -1,11 +1,13 @@
 #!/usr/bin/env bats
 
-load test-helper
+load lib-test-helper
+fixtures lib
+
 LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
 
 # Correctness.
 @test 'unescape() removes escape characters' {
-  local template="$TMP/reference.tmpl"
+  local template="$FIXTURE_ROOT/reference.tmpl"
   run bash -c '. "'"$LIB_DIR/expand-template"'"; cat '"$template"' | escape | unescape'
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 32 ]

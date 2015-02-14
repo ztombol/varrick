@@ -1,12 +1,14 @@
 #!/usr/bin/env bats
 
-load test-helper
+load lib-test-helper
+fixtures lib
+
 LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
 
 # Correctness.
 @test 'escape() transforms escaped references' {
-  local template="$TMP/reference.tmpl"
-  run bash -c '. "'"$LIB_DIR/expand-template"'"; cat '"$template"' | escape'
+  local template="$FIXTURE_ROOT/reference.tmpl"
+  run bash -c ". '$LIB_DIR/expand-template'; cat '$template' | escape"
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 32 ]
 
