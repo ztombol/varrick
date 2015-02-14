@@ -3,11 +3,11 @@
 load test-helper
 
 # Internal prefix.
-@test 'report error and exit with 2 when the internal prefix is detected in the environment' {
+@test 'report error when the internal prefix is detected in the environment' {
   export _d8e1_=1 _d8e1_a=1
   run "$EXEC"
   [ "$status" -eq 2 ]
-  [ "${#lines[@]}" -gt 1 ]
+  [ "${#lines[@]}" -eq 3 ]
   [ "${lines[0]}" == "Error: no variable with the prefix \`_d8e1_'\ should exist in the environment!" ]
   [ "${lines[1]}" == '_d8e1_' ]
   [ "${lines[2]}" == '_d8e1_a' ]
@@ -55,13 +55,6 @@ load test-helper
 }
 
 # Input from file.
-@test 'FILE template: display error and exit if the template file does not exist' {
-  local template="$TMP/does_not_exist.tmpl"
-  run "$EXEC" "$template"
-  [ "$status" -eq 1 ]
-  [ "$output" == "Error: no such file \`$template'" ]
-}
-
 @test 'FILE template: running without arguments prints usage' {
   run "$EXEC"
   [ "$status" -eq 1 ]
@@ -74,6 +67,13 @@ load test-helper
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 4 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
+}
+
+@test 'FILE template: report error if the template file does not exist' {
+  local template="$TMP/does_not_exist.tmpl"
+  run "$EXEC" "$template"
+  [ "$status" -eq 1 ]
+  [ "$output" == "Error: no such file \`$template'" ]
 }
 
 @test 'FILE template: output to STDOUT when no destination is specified' {
@@ -101,7 +101,7 @@ load test-helper
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
 }
 
-@test "FILE template: output to file when destination is a directory and template does NOT end in \`.tmpl'" {
+@test "FILE template: output to file when destination is a directory and template does not end in \`.tmpl'" {
   local template="$TMP/static.template"
   local expanded="$TMP/dest/static.template"
   mv "$TMP/static.tmpl" "$template"
@@ -122,7 +122,7 @@ load test-helper
 
 @test 'STDIN template: output to STDOUT when no destination is specified' {
   local template="$TMP/static.tmpl"
-  run bash -c 'cat '"$template"' | "$EXEC"'
+  run bash -c "cat '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
@@ -130,14 +130,14 @@ load test-helper
 @test 'STDIN template: output to file when destination is not a directory' {
   local template="$TMP/static.tmpl"
   local expanded="$TMP/static"
-  run bash -c 'cat '"$template"' | "$EXEC" '"$expanded"
+  run bash -c "cat '$template' | '$EXEC' '$expanded'"
   [ "$status" -eq 0 ]
   [ -f "$expanded" ]
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
 }
 
-@test 'STDIN template: report error and exit with 1 when destination is a directory' {
-  run bash -c 'echo "" | "$EXEC" "$TMP"'
+@test 'STDIN template: report error when destination is a directory' {
+  run bash -c "echo '' | '$EXEC' '$TMP'"
   [ "$status" -eq 1 ]
   [ "$output" == 'Error: destination cannot be a directory when reading the template from STDIN!' ]
 }

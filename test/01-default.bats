@@ -1,20 +1,19 @@
 #!/usr/bin/env bats
 
 load test-helper
-fixtures env
 
-@test "expanding defined variabes" {
-  load "$FIXTURE_ROOT/all.bash"
-  local template="$TMP/dynamic.tmpl"
-  run "$EXEC" "$template"
+# Test default behaviour.
+@test 'expand reference of defined variable to its value' {
+  local template='$_thing'
+  export _thing=thing
+  run bash -c "echo '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
-  [ "$output" == 'The thing! Do the thing!' ]
+  [ "$output" == 'thing' ]
 }
 
-@test "expanding missing variables to empty string" {
-  load "$FIXTURE_ROOT/missing.bash"
-  local template="$TMP/dynamic.tmpl"
-  run "$EXEC" "$template"
+@test 'expand reference of undefined variable to the empty string' {
+  local template='$_thing'
+  run bash -c "echo '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
-  [ "$output" == 'The ! Do the !' ]
+  [ "$output" == '' ]
 }
