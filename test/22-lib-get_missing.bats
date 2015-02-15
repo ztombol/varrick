@@ -1,9 +1,7 @@
 #!/usr/bin/env bats
 
 load lib-test-helper
-
-LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
-. "$LIB_DIR/expand-template"
+load "$LIB_DIR/zhu-li.sh"
 
 # Correctness.
 @test 'get_missing() without escaping prints list of missing references' {

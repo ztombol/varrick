@@ -19,6 +19,7 @@ fixtures bin
   run "$EXEC" -u
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 4 ]
+  [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
@@ -33,6 +34,7 @@ fixtures bin
   run "$EXEC" -h
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -gt 4 ]
+  [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
@@ -40,19 +42,20 @@ fixtures bin
   run "$EXEC" --help
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -gt 4 ]
+  [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test "\`-v' displays version information" {
   run "$EXEC" -v
   [ "$status" -eq 0 ]
-  [ $(expr "$output" : '^.* v[0-9].[0-9].[0-9]$') -ne 0 ]
+  [ $(expr "$output" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
 }
 
 @test "\`--version' displays version information" {
   run "$EXEC" --version
   [ "$status" -eq 0 ]
-  [ $(expr "$output" : '^.* v[0-9].[0-9].[0-9]$') -ne 0 ]
+  [ $(expr "$output" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
 }
 
 # Input from file.

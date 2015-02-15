@@ -46,23 +46,23 @@ _d8e1_OPT_CHECK=0
 
 print_version () {
   local version='0.1.0'
-  echo "$(basename "$0") v$version"
+  echo "Varrick v$version"
 }
 
 print_usage () {
   cat<<EOUSAGE
 $(print_version)
-Usage: $(basename "$0") [OPTION]... <TEMPLATE> [DESTINATION]
-       ... | $(basename "$0") [OPTION]... [DESTINATION]
-See \`$(basename "$0") --help' for more.
+Usage: varrick [OPTION]... <TEMPLATE> [DESTINATION]
+       ... | varrick [OPTION]... [DESTINATION]
+See \`varrick --help' for more.
 EOUSAGE
 }
 print_help () {
   cat<<EOHELP
 $(print_version)
 Usage:
-  $(basename "$0") [OPTION]... <TEMPLATE> [DESTINATION]
-  ... | $(basename "$0") [OPTION]... [DESTINATION]
+  varrick [OPTION]... <TEMPLATE> [DESTINATION]
+  ... | varrick [OPTION]... [DESTINATION]
 
 Description:
   Substitutes the values of environment variables in place of shell format
@@ -102,13 +102,13 @@ Escaping:
   Variable references can be escaped to prevent expansion using a slash \`\\'.
 
     $ export name=value
-    $ echo '\\\$name' | $(basename "$0")
+    $ echo '\\\$name' | varrick
     \$name
 
   If a slash appears in a non-escping position, i.e. not immediately before a
   variable reference, it has to be escaped.
 
-    $ echo 'text \\\\ text' | $(basename "$0")
+    $ echo 'text \\\\ text' | varrick
     text \\ text
 
   When turning a file into template, it is recommended to first escape all
@@ -119,7 +119,7 @@ Escaping:
   Escaping slashes in the substituted values is not necessary.
 
 Caveat:
-  $(basename "$0") exits with an error when a variable starting with the prefix
+  varrick exits with an error when a variable starting with the prefix
   \`_d81e_' is declared in the environment. This is due to the fact that such
   variables are used internally and allowing them in the environment would cause
   incosistent behaviour and hard to find errors.
@@ -137,7 +137,7 @@ EOHELP
 
 _d8e1_TEMP=$(getopt --options c,e,h,m,s,u,v,x \
                     --long check,escape,help,missing,no-expand,summary,usage,version \
-                    --name "$(basename "$0")" -- "$@")
+                    --name "varrick" -- "$@")
 
 if [ $? != 0 ]; then echo "Terminating..." >&2; exit 1; fi
 eval set -- "$_d8e1_TEMP"
@@ -211,8 +211,8 @@ fi
 ################################################################################
 
 # Load libraries.
-_d8e1_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/expand-template"
-. "$_d8e1_LIB_DIR/expand-template"
+_d8e1_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib/varrick" && pwd)"
+. "$_d8e1_LIB_DIR/zhu-li.sh"
 
 if [ "$_d8e1_OPT_SUMMARY" -eq 1 ]; then
   if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then

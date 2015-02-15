@@ -1,10 +1,8 @@
 #!/usr/bin/env bats
 
 load lib-test-helper
+load "$LIB_DIR/zhu-li.sh"
 fixtures lib
-
-LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
-. "$LIB_DIR/expand-template"
 
 # Correctness.
 @test 'check_esc() prints error and lines containing invalid escapes' {

@@ -3,12 +3,10 @@
 load lib-test-helper
 fixtures lib
 
-LIB_DIR="$BATS_TEST_DIRNAME/../lib/expand-template"
-
 # Correctness.
 @test 'escape() transforms escaped references' {
   local template="$FIXTURE_ROOT/reference.tmpl"
-  run bash -c ". '$LIB_DIR/expand-template'; cat '$template' | escape"
+  run bash -c ". '$LIB_DIR/zhu-li.sh'; cat '$template' | escape"
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 32 ]
 
