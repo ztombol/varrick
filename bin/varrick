@@ -1,7 +1,8 @@
 #!/usr/bin/bash
+
 #
-# This script substitutes environment variables in shell format strings. It is
-# a wrapper around `envsubst' and provides a number of convenient functions.
+# Substitute environment variables in shell format strings. It uses `envsubst'
+# as its backend and provides a number of convenient functions around it.
 #
 
 ################################################################################
@@ -17,31 +18,11 @@ fi
 
 # NOTE: Make sure to prefix the name of every global variable (including
 #       non-local function variables), and local variables in functions that
-#       modify environment variables.
+#       access environment variables.
 
 
 ################################################################################
-#                                DEFAULT OPTIONS
-################################################################################
-
-# Report referenced variables that are missing (-m, --missing).
-_d8e1_OPT_MISSING=0
-
-# Do not expand missing variables (-n, --no-expand).
-_d8e1_OPT_EXPAND=0
-
-# Do not expand variables preceded by a backslash (-x, --escape).
-_d8e1_OPT_ESCAPE=0
-
-# Print a list of variable referenced and escaped (-s, --summary).
-_d8e1_OPT_SUMMARY=0
-
-# Print list of invalid escapings if any (-v, --verify).
-_d8e1_OPT_CHECK=0
-
-
-################################################################################
-#                                 HANDLE OPTIONS
+#                            HELP, USAGE AND VERSION
 ################################################################################
 
 print_version () {
@@ -50,24 +31,25 @@ print_version () {
 }
 
 print_usage () {
+  print_version
   cat<<EOUSAGE
-$(print_version)
-Usage: varrick [OPTION]... <TEMPLATE> [DESTINATION]
-       ... | varrick [OPTION]... [DESTINATION]
+Usage: varrick [OPTIONS] <TEMPLATE> [DESTINATION]
+       ... | varrick [OPTIONS] [DESTINATION]
 See \`varrick --help' for more.
 EOUSAGE
 }
+
 print_help () {
+  print_version
   cat<<EOHELP
-$(print_version)
 Usage:
-  varrick [OPTION]... <TEMPLATE> [DESTINATION]
-  ... | varrick [OPTION]... [DESTINATION]
+  varrick [OPTIONS] <TEMPLATE> [DESTINATION]
+  ... | varrick [OPTIONS] [DESTINATION]
 
 Description:
-  Substitutes the values of environment variables in place of shell format
-  strings of the form \`\$var' and \`\${var}'. It uses \`envsubst' internally
-  and adds a few convenient features to it, e.g. escaping support.
+  Varrick is a template engine. It substitutes references of the form \`\$var'
+  and \`\${var}' with environment variables. It uses \`envsubst' internally
+  while adding convenient features such as escaping support.
 
 Arguments:
   TEMPLATE
@@ -119,15 +101,15 @@ Escaping:
   Escaping slashes in the substituted values is not necessary.
 
 Caveat:
-  varrick exits with an error when a variable starting with the prefix
+  Varrick exits with an error when a variable starting with the prefix
   \`_d81e_' is declared in the environment. This is due to the fact that such
   variables are used internally and allowing them in the environment would cause
   incosistent behaviour and hard to find errors.
 
 Exit status:
-  The utility exits with 0 on success. When an error is detected the exit status
-  is 1. When the internally used variable name prefix appears in the environment
-  the utility exits with 2 (see \`Caveat' section).
+  Varrick exits with 0 on success. When an error is detected the exit status is
+  1. When the internally used variable name prefix appears in the environment
+  varrick exits with 2 (see \`Caveat' section).
 
 See also:
   envsubst(1)
@@ -135,6 +117,19 @@ See also:
 EOHELP
 }
 
+
+################################################################################
+#                                 HANDLE OPTIONS
+################################################################################
+
+# Default options
+_d8e1_OPT_MISSING=0
+_d8e1_OPT_EXPAND=0
+_d8e1_OPT_ESCAPE=0
+_d8e1_OPT_SUMMARY=0
+_d8e1_OPT_CHECK=0
+
+# Parse options.
 _d8e1_TEMP=$(getopt --options c,e,h,m,s,u,v,x \
                     --long check,escape,help,missing,no-expand,summary,usage,version \
                     --name "varrick" -- "$@")
@@ -203,7 +198,6 @@ else
 
   _d8e1_INPUT="$(cat)"
 fi
-
 
 
 ################################################################################

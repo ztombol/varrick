@@ -1,8 +1,14 @@
 #!/usr/bin/bash
 
-# Outputs the list of variables referenced in the given template. The output
-# contains one variable name per line, and can be directly captured into an
-# array by the caller. For example:
+#
+# Lib "Zhu-Li" offers functions for working with template files containing shell
+# format strings.
+#
+
+# Print list of variables referenced in the given template. When escaping is
+# enabled (default), escaped variables are not reported. The output contains one
+# variable name per line and can be directly captured into an array.
+# For example:
 #
 #   vars=( "$(get_referenced "$input")" )
 #
@@ -10,7 +16,7 @@
 #   none
 # Arguments:
 #   $1 - template string
-#   $2 - enable escaping [ 1, Yes ]
+#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -27,8 +33,8 @@ get_referenced () {
     ref_vars=( $(
       # 1. surround non-escaped references with newlines: \$var   -> \n\$var\n
       #                                                   \${var} -> \n\${var}\n
-      # 2. select lines that contain only a non-escaped reference: \$var   -> var
-      #                                                            \${var} -> {var}
+      # 2. extract name of referenced variables: \$var   -> var
+      #                                          \${var} -> {var}
       # 3. remove braces: {var} -> var
       # 4. remove duplicates
       echo "$input" \
@@ -41,8 +47,8 @@ get_referenced () {
     ref_vars=( $(
       # 1. surround references with newlines: \$var   -> \n\$var\n
       #                                       \${var} -> \n\${var}\n
-      # 2. select lines that contain only a reference: \$var   -> var
-      #                                                \${var} -> {var}
+      # 2. extract name of referenced variables: \$var   -> var
+      #                                          \${var} -> {var}
       # 3. remove braces: {var} -> var
       # 4. remove duplicates
       echo "$input" \
@@ -57,9 +63,9 @@ get_referenced () {
   [ "${#ref_vars[@]}" -ne 0 ]
 }
 
-# Output the list of escaped variable references in the given template. The
-# output contains one variable name per line, and can be directly captured into
-# an array by the caller. For example:
+# Print list of escaped variable references in the given template. The output
+# contains one variable name per line and can be directly captured into an
+# array. For example:
 #
 #   vars=( "$(get_escaped "$input")" )
 #
@@ -81,8 +87,8 @@ get_escaped () {
   esc_vars=( $(
     # 1. surround escaped references with newlines: \$var   -> \n\$var\n
     #                                               \${var} -> \n\${var}\n
-    # 2. select lines that contain only an escaped reference: \$var   -> var
-    #                                                         \${var} -> {var}
+    # 2. extract name of referenced variables: \$var   -> var
+    #                                          \${var} -> {var}
     # 3. remove braces: {var} -> var
     # 4. remove duplicates
     echo "$input" \
@@ -96,19 +102,19 @@ get_escaped () {
   [ "${#esc_vars[@]}" -ne 0 ]
 }
 
-# Outputs the list of variables referenced in the given template that are not
-# defined in the environment. The output contains one variable name per line,
-# and can be directly captured into an array by the caller. For example:
+# Print list of variables referenced in the given template but not defined in
+# the environment. When escaping is enabled (default), escaped variables are not
+# reported. The output contains one variable name per line and can be directly
+# captured into an array. For example:
 #
 #   vars=( "$(get_missing "$input")" )
 #
-#
 # Globals:
-#   All environmental variables.
+#   none
 # Arguments:
 #   $1 - template string
-#   $2 - enable escaping [ 1, Yes ]
-# Outputs:
+#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
+# Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
 #   0 - list is not empty
@@ -126,20 +132,20 @@ get_missing () {
   [ "${#miss_vars[@]}" -ne 0 ]
 }
 
-# Outputs the list of variables referenced in the given template that are
-# defined in the environment. Essentially producing the complement of
-# `get_missing'. The output contains one variable name per line, and can be
-# directly captured into an array by the caller. For example:
+# Print list of variables referenced in the given template and defined in the
+# environment. When escaping is enabled (default), escaped variables are not
+# reported. Essentially, it prints the complement of `get_missing()'. The output
+# contains one variable name per line and can be directly captured into an
+# array. For example:
 #
 #   vars=( "$(get_defined "$input")" )
 #
-#
 # Globals:
-#   All environmental variables.
+#   none
 # Arguments:
 #   $1 - template string
-#   $2 - enable escaping [ 1, Yes ]
-# Outputs:
+#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
+# Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
 #   0 - list is not empty
@@ -157,9 +163,10 @@ get_defined () {
   [ "${#defined_vars[@]}" -ne 0 ]
 }
 
-# Escape the template read from STDIN to prevent `envsubst' to expand escaped
-# references. This involves a simple transformation of swapping the first two
-# characters of escaped references, i.e. `\$' to `$\'.
+# Transform the template read from STDIN to prevent `envsubst' to expand escaped
+# references. This involves the simple transformation of swapping the first two
+# characters of escaped references, i.e turning `\$' into `$\'. This is
+# necessary before expanding a template that contains escape sequences.
 #
 # Globals:
 #   none
@@ -180,8 +187,9 @@ escape () {
   sed -r 's/((^|[^\])(\\\\)*)(\\)'"$ref"'/\1$\4\5/g'
 }
 
-# Un-escape the template read from STDIN by removing reference and slash
-# escaping slashes.
+# Remove slashes escaping references and slashes from the template read from
+# STDIN. This is necessary after expanding a template that contains escape
+# sequences.
 #
 # Globals:
 #   none
@@ -204,16 +212,14 @@ unescape () {
          -e 's/\\\\/\\/g'
 }
 
-# Escape slashes in the given environment variables.
+# Escape slashes in the given environment variables. This is necessary before
+# expanding a template containing escape sequences to cancel out the effect of
+# `unescape()' on substituted variables.
 #
 # Globals:
 #   none
 # Arguments:
 #   $@ - list of variables to escape
-# Inputs:
-#   none
-# Outputs:
-#   none
 # Returns:
 #   none
 escape_vars () {
@@ -223,15 +229,13 @@ escape_vars () {
   done
 }
 
-# Check that all escape sequences are valid in the given template. Lines
+# Check whether all escape sequences are valid in the given template. Lines
 # containing invalid escape sequences are printed along with their line numbers.
 #
 # Globals:
 #   none
 # Arguments:
 #   $1 - template string
-# Input:
-#   none
 # Outputs:
 #   STDOUT - lines containing invalid escaping along with their numbers
 # Returns:
