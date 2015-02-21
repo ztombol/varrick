@@ -18,7 +18,7 @@ fixtures bin
 @test "\`-u' displays usage information" {
   run "$EXEC" -u
   [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -eq 4 ]
+  [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
@@ -26,14 +26,14 @@ fixtures bin
 @test "\`--usage' displays usage information" {
   run "$EXEC" --usage
   [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -eq 4 ]
+  [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test "\`-h' displays help" {
   run "$EXEC" -h
   [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -gt 4 ]
+  [ "${#lines[@]}" -gt 5 ]
   [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
@@ -41,7 +41,7 @@ fixtures bin
 @test "\`--help' displays help" {
   run "$EXEC" --help
   [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -gt 4 ]
+  [ "${#lines[@]}" -gt 5 ]
   [ $(expr "${lines[0]}" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
@@ -58,18 +58,61 @@ fixtures bin
   [ $(expr "$output" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
 }
 
+# Input source detection.
+@test 'reading template from file when TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run "$EXEC" "$template"
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
+@test 'reading template from file when no TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run "$EXEC" "$template" 0>/dev/null
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
+@test 'reading template from piped input when TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run bash -c "cat '$template' | '$EXEC'"
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
+@test 'reading template from piped input when no TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run bash -c "cat '$template' | '$EXEC'" 0>/dev/null
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
+@test 'reading template from redirected input when TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run bash -c "'$EXEC' < '$template'"
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
+@test 'reading template from redirected input when no TTY is available' {
+  local template="$FIXTURE_ROOT/static.tmpl"
+  run bash -c "'$EXEC' < '$template'" 0>/dev/null
+  [ "$status" -eq 0 ]
+  [ "$output" == "$(cat "$template")" ]
+}
+
 # Input from file.
 @test 'FILE template: running without arguments prints usage' {
   run "$EXEC"
   [ "$status" -eq 1 ]
-  [ "${#lines[@]}" -eq 4 ]
+  [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
 @test 'FILE template: running with more than 2 arguments prints usage' {
   run "$EXEC" arg1 arg2 arg3
   [ "$status" -eq 1 ]
-  [ "${#lines[@]}" -eq 4 ]
+  [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
@@ -122,7 +165,7 @@ fixtures bin
 @test 'STDIN template: running with more than 1 argument prints usage' {
   run bash -c "echo '' | '$EXEC' arg1 arg2"
   [ "$status" -eq 1 ]
-  [ "${#lines[@]}" -eq 4 ]
+  [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 

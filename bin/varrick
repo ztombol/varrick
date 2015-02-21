@@ -33,8 +33,9 @@ print_version () {
 print_usage () {
   print_version
   cat<<EOUSAGE
-Usage: varrick [OPTIONS] <TEMPLATE> [DESTINATION]
+Usage: varrick [OPTIONS] TEMPLATE [DESTINATION]
        ... | varrick [OPTIONS] [DESTINATION]
+       varrick [OPTIONS] < TEMPLATE [> DESTINATION]
 See \`varrick --help' for more.
 EOUSAGE
 }
@@ -43,8 +44,9 @@ print_help () {
   print_version
   cat<<EOHELP
 Usage:
-  varrick [OPTIONS] <TEMPLATE> [DESTINATION]
+  varrick [OPTIONS] TEMPLATE [DESTINATION]
   ... | varrick [OPTIONS] [DESTINATION]
+  varrick [OPTIONS] < TEMPLATE [> DESTINATION]
 
 Description:
   Varrick is a template engine. It substitutes references of the form \`\$var'
@@ -164,7 +166,8 @@ fi
 ################################################################################
 
 unset _d8e1_DEST
-if tty -s <&0; then
+_d8e1_INPUT_SRC="$(stat -L --printf=%F /proc/$$/fd/0)"
+if [ "$_d8e1_INPUT_SRC" == 'character special file' ]; then
   # Template read from file.
   if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
     print_usage
