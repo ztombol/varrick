@@ -79,6 +79,10 @@ Options:
   -m, --missing
     Report undefined variables and exit. Mutually exclusive with \`-e'.
 
+  -p, --preprocess
+    Escape input if it contains variable references and exit. Otherwise, leave
+    it unmodified.
+
   -s, --summary
     Print a list of referenced and escaped variables and exit.
 
@@ -129,15 +133,16 @@ EOHELP
 ################################################################################
 
 # Default options
-_d8e1_OPT_MISSING=0
-_d8e1_OPT_EXPAND=0
-_d8e1_OPT_ESCAPE=0
-_d8e1_OPT_SUMMARY=0
 _d8e1_OPT_CHECK=0
+_d8e1_OPT_EXPAND=0
+_d8e1_OPT_MISSING=0
+_d8e1_OPT_PREPROCESS=0
+_d8e1_OPT_SUMMARY=0
+_d8e1_OPT_ESCAPE=0
 
 # Parse options.
-_d8e1_TEMP=$(getopt --options c,e,h,m,s,u,v,x \
-                    --long check,escape,help,missing,no-expand,summary,usage,version \
+_d8e1_TEMP=$(getopt --options c,e,h,m,p,s,u,v,x \
+                    --long check,escape,help,missing,no-expand,preprocess,summary,usage,version \
                     --name "varrick" -- "$@")
 
 if [ $? != 0 ]; then echo "Terminating..." >&2; exit 1; fi
@@ -149,6 +154,7 @@ while true; do
     -e|--no-expand) _d8e1_OPT_EXPAND=1; shift;;
     -h|--help) print_help; exit 0; shift;;
     -m|--missing) _d8e1_OPT_MISSING=1; shift;;
+    -p|--preprocess) _d8e1_OPT_PREPROCESS=1; shift;;
     -s|--summary) _d8e1_OPT_SUMMARY=1; shift;;
     -u|--usage) print_usage; exit 0; shift;;
     -v|--version) print_version; exit 0; shift;;
@@ -255,16 +261,21 @@ if [ "$_d8e1_OPT_EXPAND" -eq 1 ]; then
   fi
 fi
 
-# Expand template.
-# Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
-if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then
-  escape_vars "$(get_defined "$_d8e1_INPUT")"
-  _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" \
-                    | escape \
-                    | envsubst $_d8e1_SHELL_FORMAT \
-                    | unescape)"
+# Preprocess.
+if [ "$_d8e1_OPT_PREPROCESS" -eq 1 ]; then
+  _d8e1_OUTPUT="$(preprocess "$_d8e1_INPUT")"
 else
-  _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" | envsubst $_d8e1_SHELL_FORMAT)"
+  # Expand template.
+  # Not quoting `$SHELL_FORMAT' allows not passing the argument if it's not set.
+  if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then
+    escape_vars "$(get_defined "$_d8e1_INPUT")"
+    _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" \
+                      | escape \
+                      | envsubst $_d8e1_SHELL_FORMAT \
+                      | unescape)"
+  else
+    _d8e1_OUTPUT="$(echo "$_d8e1_INPUT" | envsubst $_d8e1_SHELL_FORMAT)"
+  fi
 fi
 
 # Output
