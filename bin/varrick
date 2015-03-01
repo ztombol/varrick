@@ -53,6 +53,9 @@ Description:
   and \`\${var}' with environment variables. It uses \`envsubst' internally
   while adding convenient features such as escaping support.
 
+  By default, Varrick expands a reference to an undefined variable to the empty
+  string. This can be changed with \`-e' or \`-m'.
+
 Arguments:
   TEMPLATE
     Template file to expand. Can be read from STDIN if not specified.
@@ -111,7 +114,7 @@ Caveat:
 Exit status:
   Varrick exits with 0 on success. When an error is detected the exit status is
   1. When the internally used variable name prefix appears in the environment
-  varrick exits with 2 (see \`Caveat' section).
+  Varrick exits with 2 (see \`Caveat' section).
 
 See also:
   envsubst(1)
