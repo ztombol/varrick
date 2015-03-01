@@ -190,3 +190,13 @@ fixtures bin
   [ "$status" -eq 1 ]
   [ "$output" == 'Error: destination cannot be a directory when reading the template from STDIN!' ]
 }
+
+# Test in-place expansion.
+@test 'expanding in-place' {
+  export _thing='thing' _do='Do'
+  local template="$TMP/dynamic.tmpl"
+  cp "$FIXTURE_ROOT/dynamic.tmpl" "$template"
+  run "$EXEC" "$template" "$template"
+  [ "$status" -eq 0 ]
+  [ "$(cat "$template")" == 'The thing! Do the thing!' ]
+}

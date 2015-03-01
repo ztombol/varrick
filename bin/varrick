@@ -61,12 +61,13 @@ Arguments:
     Template file to expand. Can be read from STDIN if not specified.
 
   DESTINATION
-    Where to put the expanded template. In case the given path is as an existing
+    Where to put the expanded template. In case the given path is an existing
     directory, the output is saved in that directory. The filename is the
     template's filename, unless it ends with \`.tmpl' suffix in which case the
     suffix is removed. Otherwise the destination is interpreted as a file and
-    the result is saved at the given path. Parent directories have to exist.
-    Defaults to STDOUT.
+    the result is saved at the given path. In-place expansion is supported when
+    specifying a file path. Parent directories have to exist. Defaults to
+    STDOUT.
 
 Options:
   -c, --check
