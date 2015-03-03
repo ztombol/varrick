@@ -211,6 +211,40 @@ If you find any bugs or have suggestions, open an issue or pull request on the
 projects [GitHub page][varrick-gh].
 
 
+## Conventions
+
+To maintain consistent style and thus ease maintenance and contribution, please
+follow the conventions below (modelled after the [contribution
+guidelines][git-contrib] of the Git project).
+
+***Note:*** *Don't worry about nailing all of these the first time. Commits and
+pull requests can be amended and we can work it out together. \\^-^/*
+
+Code and documentation:
+- Lines should be no longer than 80 characters, except where a longer line
+  improves readability or where a line cannot be broken up, e.g. test
+  descriptions.
+- Do not use tabs. Use 2 spaces instead.
+- Messages appearing on the screen should not be wider than 80 characters,
+  except when they contain part of the input that should be preserved verbatim,
+  e.g. listing lines that contain escaping errors.
+
+Commits and pull requests:
+- A commit message must start with a short summary written in the imperative and
+  omitting the full stop. It must start with a capital letter, unless the first
+  word is always written lower-case, e.g. file or function name. Be concise, the
+  soft-limit is 50 characters.
+- Optionally, the summary may be followed by a more detailed explanation
+  separated by an empty line. Wrap this to 72 characters.
+- Include documentation and test changes in the same commit to make reverting
+  easy.
+- Write tests for your modifications. The test suite must pass after each
+  commit.
+- Make separate commits for logically separate changes.
+- Commits fixing or closing an issue should include a reference to the issue,
+  e.g. "Close #x" or "Fix #x", to automatically close the issue when merged.
+
+
 # Name
 
 The name *"Varrick"* did not materialise until shortly before the first release.
@@ -231,3 +265,4 @@ behind Varrick is called *"Zhu-Li"*.
 [wikia-zhu-li]: http://avatar.wikia.com/wiki/Zhu_Li_Moon
 [gplv3]: https://www.gnu.org/licenses/gpl.txt
 [varrick-gh]: https://github.com/ztombol/varrick
+[git-contrib]: https://github.com/git/git/blob/master/Documentation/SubmittingPatches
