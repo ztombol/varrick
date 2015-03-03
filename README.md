@@ -204,6 +204,13 @@ Varrick has the following dependencies.
 * basic utilities, e.g. `cat` or `ls`, from [`coreutils`][coreutils-hp]
 
 
+# Contribution
+
+Varrick is licensed under [GPLv3][gplv3]. Contribution of any kind is welcome.
+If you find any bugs or have suggestions, open an issue or pull request on the
+projects [GitHub page][varrick-gh].
+
+
 # Name
 
 The name *"Varrick"* did not materialise until shortly before the first release.
@@ -222,3 +229,5 @@ behind Varrick is called *"Zhu-Li"*.
 [sed-hp]: https://www.gnu.org/software/sed/
 [wikia-varrick]: http://avatar.wikia.com/wiki/Iknik_Blackstone_Varrick
 [wikia-zhu-li]: http://avatar.wikia.com/wiki/Zhu_Li_Moon
+[gplv3]: https://www.gnu.org/licenses/gpl.txt
+[varrick-gh]: https://github.com/ztombol/varrick
