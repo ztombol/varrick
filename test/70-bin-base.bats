@@ -9,7 +9,7 @@ fixtures bin
   run "$EXEC"
   [ "$status" -eq 2 ]
   [ "${#lines[@]}" -eq 3 ]
-  [ "${lines[0]}" == "Error: no variable with the prefix \`_d8e1_'\ should exist in the environment!" ]
+  [ "${lines[0]}" == "Error: no variable with the prefix \`_d8e1_' should exist in the environment!" ]
   [ "${lines[1]}" == '_d8e1_' ]
   [ "${lines[2]}" == '_d8e1_a' ]
 }
