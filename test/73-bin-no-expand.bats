@@ -31,5 +31,5 @@ test_e_no-expand () {
 @test "\`-e' and \`-m' are mutually exclusive" {
   run bash -c "echo '' | '$EXEC' -e -m"
   [ "$status" -eq 1 ]
-  [ "$output" == "Error: \`--missing' (-m) and \`--no-expand' (-e) cannot be specified at the same time!" ]
+  [ "$output" == "Error: \`--missing' (-m) and \`--no-expand' (-e) are mutually exclusive!" ]
 }

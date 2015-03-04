@@ -271,12 +271,13 @@ check_esc () {
     # 1. (odd * `\') + (not a `$')
     # 2. (odd * `\') + $ + (not a `{' or variable name character)
     # 3. (odd * `\') + ${ + (not a variable name character)
-    # 4. (odd * `\') + ${ + (variable name characters) + (not a `}' or a variable name character)
-    local match="$(echo "$line" \
-      | sed -nr -e '/(^|[^\])(\\\\)*\\([^\$]|$)/p' \
-                -e '/(^|[^\])(\\\\)*\\\$([^{a-zA-Z_]|$)/p' \
-                -e '/(^|[^\])(\\\\)*\\\$\{([^a-zA-Z_]|$)/p' \
-                -e '/(^|[^\])(\\\\)*\\\$\{[a-zA-Z_][a-zA-Z_0-9]*([^}a-zA-Z_0-9]|$)/p'
+    # 4. (odd * `\') + ${ + (variable name characters)
+    #                + (not a `}' or a variable name character)
+    local match="$(echo "$line" | sed -nr \
+      -e '/(^|[^\])(\\\\)*\\([^\$]|$)/p' \
+      -e '/(^|[^\])(\\\\)*\\\$([^{a-zA-Z_]|$)/p' \
+      -e '/(^|[^\])(\\\\)*\\\$\{([^a-zA-Z_]|$)/p' \
+      -e '/(^|[^\])(\\\\)*\\\$\{[a-zA-Z_][a-zA-Z_0-9]*([^}a-zA-Z_0-9]|$)/p'
     )"
     if [ -n "$match" ]; then
       if [ "$error" -eq 0 ]; then
