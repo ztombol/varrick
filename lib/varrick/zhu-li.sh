@@ -1,5 +1,3 @@
-#!/usr/bin/bash
-
 #
 # Copyright (C)  2015  Zoltan Vass <zoltan (dot) tombol (at) gmail (dot) com>
 #
