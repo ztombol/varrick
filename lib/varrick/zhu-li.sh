@@ -25,7 +25,7 @@
 #
 
 # Print list of variables referenced in the given template. When escaping is
-# enabled (default), escaped variables are not reported. The output contains one
+# enabled (default) escaped variables are not reported. The output contains one
 # variable name per line and can be directly captured into an array.
 # For example:
 #
@@ -122,14 +122,14 @@ get_escaped () {
 }
 
 # Print list of variables referenced in the given template but not defined in
-# the environment. When escaping is enabled (default), escaped variables are not
+# the environment. When escaping is enabled (default) escaped variables are not
 # reported. The output contains one variable name per line and can be directly
 # captured into an array. For example:
 #
 #   vars=( "$(get_missing "$input")" )
 #
 # Globals:
-#   none
+#   ANY: enumerate environment variables.
 # Arguments:
 #   $1 - template string
 #   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
@@ -152,7 +152,7 @@ get_missing () {
 }
 
 # Print list of variables referenced in the given template and defined in the
-# environment. When escaping is enabled (default), escaped variables are not
+# environment. When escaping is enabled (default) escaped variables are not
 # reported. Essentially, it prints the complement of `get_missing()'. The output
 # contains one variable name per line and can be directly captured into an
 # array. For example:
@@ -160,7 +160,7 @@ get_missing () {
 #   vars=( "$(get_defined "$input")" )
 #
 # Globals:
-#   none
+#   ANY: enumerate environment variables.
 # Arguments:
 #   $1 - template string
 #   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
@@ -233,7 +233,7 @@ unescape () {
 
 # Escape slashes in the given environment variables. This is necessary before
 # expanding a template containing escape sequences to cancel out the effect of
-# `unescape()' on substituted variables.
+# `unescape()' on substituted values.
 #
 # Globals:
 #   none

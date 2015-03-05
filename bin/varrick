@@ -246,6 +246,7 @@ fi
 _d8e1_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib/varrick" && pwd)"
 . "$_d8e1_LIB_DIR/zhu-li.sh"
 
+# Handle options.
 if [ "$_d8e1_OPT_SUMMARY" -eq 1 ]; then
   if [ "$_d8e1_OPT_ESCAPE" -eq 1 ]; then
     _d8e1_ESCAPED=( $(get_escaped "$_d8e1_INPUT") )
@@ -286,8 +287,8 @@ if [ "$_d8e1_OPT_EXPAND" -eq 1 ]; then
   fi
 fi
 
-# Preprocess.
 if [ "$_d8e1_OPT_PREPROCESS" -eq 1 ]; then
+  # Preprocess.
   _d8e1_OUTPUT="$(preprocess "$_d8e1_INPUT")"
 else
   # Expand template.
