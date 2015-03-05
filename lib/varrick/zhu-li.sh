@@ -142,7 +142,7 @@ get_missing () {
   local input="$1"
   local do_escape="${2:-1}"
 
-  local temp_vars miss_vars
+  local ref_vars miss_vars
   ref_vars=( $(get_referenced "$input" "$do_escape") )
   miss_vars=( $(comm -23 <(printf "%s\n" "${ref_vars[@]}") \
                          <(printf "%s\n" "$(compgen -e | sort)")) )
@@ -173,7 +173,7 @@ get_defined () {
   local input="$1"
   local do_escape="${2:-1}"
 
-  local temp_vars defined_vars
+  local ref_vars defined_vars
   ref_vars=( $(get_referenced "$input" "$do_escape") )
   defined_vars=( $(comm -12 <(printf "%s\n" "${ref_vars[@]}") \
                             <(printf "%s\n" "$(compgen -e | sort)")) )
