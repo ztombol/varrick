@@ -99,7 +99,8 @@ Options:
     it unmodified.
 
   -s, --summary
-    Print a list of referenced and escaped variables and exit.
+    Print a list of referenced variables and exit. When used together with \`-x'
+    escaped variables are reported separately.
 
   -x, --escape
     Allow escaping variable references with a backslash. See the \`Escaping'
