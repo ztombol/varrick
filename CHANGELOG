@@ -1,0 +1,8 @@
+v0.1.0 / 2015-03-06 / Axolotl >(`-`)<
+
+  * [FEATURE] not expanding undefined variables
+  * [FEATURE] listing undefined variables
+  * [FEATURE] enabling escaping variable references
+  * [FEATURE] listing referenced and escaped variables
+  * [FEATURE] reporting lines containing invalid escape sequences
+  * [FEATURE] escaping input if it contains variable references
