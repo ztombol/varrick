@@ -220,14 +220,22 @@ guidelines][git-contrib] of the Git project).
 ***Note:*** *Don't worry about nailing all of these the first time. Commits and
 pull requests can be amended and we can work it out together. \\^-^/*
 
-Code and documentation:
+General:
 - Lines should be no longer than 80 characters, except where a longer line
   improves readability or where a line cannot be broken up, e.g. test
   descriptions.
-- Do not use tabs. Use 2 spaces instead.
+- Use spaces instead of tabs where possible.
+
+Source code:
 - Messages appearing on the screen should not be wider than 80 characters,
   except when they contain part of the input that should be preserved verbatim,
   e.g. listing lines that contain escaping errors.
+- Use 2 spaces instead of a tab.
+
+Documentation and man pages:
+- Write documentation in [Github flavoured markdown][gh-markdown].
+- Write man pages in markdown using [ronn][ronn-hp]. Man pages are generated
+  build time, do not commit them.
 
 Commits and pull requests:
 - A commit message must start with a short summary written in the imperative and
@@ -266,3 +274,5 @@ behind Varrick is called *"Zhu-Li"*.
 [gplv3]: https://www.gnu.org/licenses/gpl.txt
 [varrick-gh]: https://github.com/ztombol/varrick
 [git-contrib]: https://github.com/git/git/blob/master/Documentation/SubmittingPatches
+[gh-markdown]: https://help.github.com/articles/github-flavored-markdown/
+[ronn-hp]: https://rtomayko.github.io/ronn/

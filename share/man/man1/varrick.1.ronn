@@ -1,0 +1,122 @@
+varrick(1) -- convenient template engine substituting environment variables
+===========================================================================
+
+## SYNOPSIS
+
+`varrick` [<options>] <template> [<destination>]<br>
+... | `varrick` [<options>] [<destination>] <br>
+`varrick` [<options>] << template> [ > <destination>]
+
+
+## DESCRIPTION
+
+`varrick` is a template engine. It substitutes references of the form `$var` and
+`${var}` with environment variables in a <template> read from a file, piped or
+redirected input.
+
+The expanded template is saved at the location specified by <destination>.
+When <template> is read from a file and <destination> is an existing directory,
+the result is saved in that directory under the template's filename without the
+`.tmpl` suffix if exists. Otherwise <destination> is interpreted as a file path
+and the result is saved in the indicated file. In-place expansion is supported
+for file paths. In all cases, parent directories must exist. <destination>
+defaults to the standard output.
+
+By default, `varrick` expands undefined references to the empty string (just
+like envsubst(1)). This behaviour can be changed with `-e` to not expand
+undefined references, or `-m` to exit with an error when undefined references
+are encountered.
+
+
+## OPTIONS
+
+* `-c`, `--check`:
+    Look for invalid escape sequences and exit.
+
+* `-e`, `--no-expand`:
+    Do not expand variables that are not defined. Mutually exclusive with `-m`.
+
+* `-m`, `--missing`:
+    Report undefined variables and exit. Mutually exclusive with *-e*.
+
+* `-p`, `--preprocess`:
+    Escape input if it contains variable references and exit. Otherwise, leave
+    it unmodified.
+
+* `-s`, `--summary`:
+    Print a list of referenced variables and exit. When used together with `-x`
+    escaped variables are reported separately.
+
+* `-x`, `--escape`:
+    Allow escaping variable references with a backslash. See [ESCAPING][].
+
+
+## ESCAPING
+
+Variable references can be escaped to prevent expansion using a slash `\`.
+
+    $ export name=value
+    $ echo '\$name' | varrick -x
+    $name
+
+If a slash appears in a non-escping position, i.e. not immediately before a
+variable reference, it has to be escaped.
+
+    $ echo 'text \\ text' | varrick -x
+    text \ text
+
+When turning a file into a template, it is recommended to first escape all
+slashes and strings that may be mistaken for references if necessary.
+
+    $ varrick -p < config.conf > config.conf.tmpl
+
+Escaping slashes in the substituted values is not necessary.
+
+
+## EXIT STATUS
+
+* `0`:
+    Success.
+
+* `1`:
+    An error occurred.
+
+* `2`:
+    Internally used variable prefix detected in the environment. See
+    [ENVIRONMENT][].
+
+
+## ENVIRONMENT
+
+`varrick` exits with an error when a variable starting with the prefix `_d81e_`
+is defined in the environment. This is due to the fact that such variables are
+used internally and allowing them in the environment would cause inconsistent
+behaviour and hard to find errors.
+
+
+## BUGS
+
+### Reporint bugs
+
+Report bugs on Varrick's GitHub issue tracker at
+<https://github.com/ztombol/varrick/issues>.
+
+
+### Known bugs
+
+`varrick` exits when a variable starting with the prefix `_d81e_` is defined in
+the environment. This is **NOT** a bug, it is a mechanism guarding against
+environment variables collding with inernally used variables. See
+[ENVIRONMENT][] for more information.
+
+
+## COPYRIGHT
+
+Copyright (C) 2015 Zoltan Tombol `<zoltan (dot) tombol (at) gmail (dot) com>`
+
+Licensed under GNU GPL version 3 <https://gnu.org/licenses/gpl.html>.
+
+
+## SEE ALSO
+
+envsubst(1)
