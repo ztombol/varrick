@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>varrick(1) - convenient template engine substituting environment variables</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#ESCAPING">ESCAPING</a>
+    <a href="#EXIT-STATUS">EXIT STATUS</a>
+    <a href="#ENVIRONMENT">ENVIRONMENT</a>
+    <a href="#BUGS">BUGS</a>
+    <a href="#COPYRIGHT">COPYRIGHT</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>varrick(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>varrick(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>varrick</code> - <span class="man-whatis">convenient template engine substituting environment variables</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><code>varrick</code> [<var>options</var>] <var>template</var> [<var>destination</var>]<br />
+... | <code>varrick</code> [<var>options</var>] [<var>destination</var>] <br />
+<code>varrick</code> [<var>options</var>] <var>&lt; template</var> [ > <var>destination</var>]</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p><code>varrick</code> is a template engine. It substitutes references of the form <code>$var</code> and
+<code>${var}</code> with environment variables in a <var>template</var> read from a file, piped or
+redirected input.</p>
+
+<p>The expanded template is saved at the location specified by <var>destination</var>.
+When <var>template</var> is read from a file and <var>destination</var> is an existing directory,
+the result is saved in that directory under the template's filename without the
+<code>.tmpl</code> suffix if exists. Otherwise <var>destination</var> is interpreted as a file path
+and the result is saved in the indicated file. In-place expansion is supported
+for file paths. In all cases, parent directories must exist. <var>destination</var>
+defaults to the standard output.</p>
+
+<p>By default, <code>varrick</code> expands undefined references to the empty string (just
+like <span class="man-ref">envsubst<span class="s">(1)</span></span>). This behaviour can be changed with <code>-e</code> to not expand
+undefined references, or <code>-m</code> to exit with an error when undefined references
+are encountered.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<dl>
+<dt><code>-c</code>, <code>--check</code></dt><dd><p>  Look for invalid escape sequences and exit.</p></dd>
+<dt><code>-e</code>, <code>--no-expand</code></dt><dd><p>  Do not expand variables that are not defined. Mutually exclusive with <code>-m</code>.</p></dd>
+<dt><code>-m</code>, <code>--missing</code></dt><dd><p>  Report undefined variables and exit. Mutually exclusive with <em>-e</em>.</p></dd>
+<dt><code>-p</code>, <code>--preprocess</code></dt><dd><p>  Escape input if it contains variable references and exit. Otherwise, leave
+  it unmodified.</p></dd>
+<dt><code>-s</code>, <code>--summary</code></dt><dd><p>  Print a list of referenced variables and exit. When used together with <code>-x</code>
+  escaped variables are reported separately.</p></dd>
+<dt><code>-x</code>, <code>--escape</code></dt><dd><p>  Allow escaping variable references with a backslash. See <a href="#ESCAPING" title="ESCAPING" data-bare-link="true">ESCAPING</a>.</p></dd>
+</dl>
+
+
+<h2 id="ESCAPING">ESCAPING</h2>
+
+<p>Variable references can be escaped to prevent expansion using a slash <code>\</code>.</p>
+
+<pre><code>$ export name=value
+$ echo '\$name' | varrick -x
+$name
+</code></pre>
+
+<p>If a slash appears in a non-escping position, i.e. not immediately before a
+variable reference, it has to be escaped.</p>
+
+<pre><code>$ echo 'text \\ text' | varrick -x
+text \ text
+</code></pre>
+
+<p>When turning a file into a template, it is recommended to first escape all
+slashes and strings that may be mistaken for references if necessary.</p>
+
+<pre><code>$ varrick -p &lt; config.conf &gt; config.conf.tmpl
+</code></pre>
+
+<p>Escaping slashes in the substituted values is not necessary.</p>
+
+<h2 id="EXIT-STATUS">EXIT STATUS</h2>
+
+<dl>
+<dt class="flush"><code>0</code></dt><dd><p>  Success.</p></dd>
+<dt class="flush"><code>1</code></dt><dd><p>  An error occurred.</p></dd>
+<dt class="flush"><code>2</code></dt><dd><p>  Internally used variable prefix detected in the environment. See
+  <a href="#ENVIRONMENT" title="ENVIRONMENT" data-bare-link="true">ENVIRONMENT</a>.</p></dd>
+</dl>
+
+
+<h2 id="ENVIRONMENT">ENVIRONMENT</h2>
+
+<p><code>varrick</code> exits with an error when a variable starting with the prefix <code>_d81e_</code>
+is defined in the environment. This is due to the fact that such variables are
+used internally and allowing them in the environment would cause inconsistent
+behaviour and hard to find errors.</p>
+
+<h2 id="BUGS">BUGS</h2>
+
+<h3 id="Reporint-bugs">Reporint bugs</h3>
+
+<p>Report bugs on Varrick's GitHub issue tracker at
+<a href="https://github.com/ztombol/varrick/issues" data-bare-link="true">https://github.com/ztombol/varrick/issues</a>.</p>
+
+<h3 id="Known-bugs">Known bugs</h3>
+
+<p><code>varrick</code> exits when a variable starting with the prefix <code>_d81e_</code> is defined in
+the environment. This is <strong>NOT</strong> a bug, it is a mechanism guarding against
+environment variables collding with inernally used variables. See
+<a href="#ENVIRONMENT" title="ENVIRONMENT" data-bare-link="true">ENVIRONMENT</a> for more information.</p>
+
+<h2 id="COPYRIGHT">COPYRIGHT</h2>
+
+<p>Copyright (C) 2015 Zoltan Tombol <code>&lt;zoltan (dot) tombol (at) gmail (dot) com></code></p>
+
+<p>Licensed under GNU GPL version 3 <a href="https://gnu.org/licenses/gpl.html" data-bare-link="true">https://gnu.org/licenses/gpl.html</a>.</p>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p><span class="man-ref">envsubst<span class="s">(1)</span></span></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>March 2015</li>
+    <li class='tr'>varrick(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
