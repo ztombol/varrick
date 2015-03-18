@@ -234,8 +234,9 @@ Source code:
 
 Documentation and man pages:
 - Write documentation in [Github flavoured markdown][gh-markdown].
-- Write man pages in markdown using [ronn][ronn-hp]. Man pages are generated
-  build time, do not commit them.
+- Write man pages in markdown using [ronn][ronn-hp]. Regenerate and commit
+  *HTML* format man pages (`make docs`) after editing. *Roff* format man pages
+  are generated build time, do not commit them.
 
 Commits and pull requests:
 - A commit message must start with a short summary written in the imperative and
