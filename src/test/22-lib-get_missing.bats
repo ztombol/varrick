@@ -35,9 +35,9 @@ load "$LIB_DIR/zhu-li.sh"
   [ "$output" == '' ]
 }
 
-@test 'get_missing() handles escaping by default' {
+@test 'get_missing() does not handle escaping by default' {
   local template='\$missing'
   run get_missing "$template"
-  [ "$status" -eq 1 ]
-  [ "$output" == '' ]
+  [ "$status" -eq 0 ]
+  [ "$output" == 'missing' ]
 }

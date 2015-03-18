@@ -33,7 +33,7 @@
 #   none
 # Arguments:
 #   $1 - template string
-#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
+#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -41,12 +41,12 @@
 #   1 - otherwise
 get_referenced () {
   local input="$1"
-  local do_escape="${2:-1}"
+  local do_escape="${2:-0}"
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
 
   local ref_vars
-  if [ "$do_escape" == 1 ]; then
+  if [ "$do_escape" != 0 ]; then
     ref_vars=( $(
       # 1. surround non-escaped references with newlines: \$var   -> \n\$var\n
       #                                                   \${var} -> \n\${var}\n
@@ -130,7 +130,7 @@ get_escaped () {
 #   ANY: enumerate environment variables.
 # Arguments:
 #   $1 - template string
-#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
+#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -138,7 +138,7 @@ get_escaped () {
 #   1 - otherwise
 get_missing () {
   local input="$1"
-  local do_escape="${2:-1}"
+  local do_escape="${2:-0}"
 
   local ref_vars miss_vars
   ref_vars=( $(get_referenced "$input" "$do_escape") )
@@ -161,7 +161,7 @@ get_missing () {
 #   ANY: enumerate environment variables.
 # Arguments:
 #   $1 - template string
-#   $2 - (opt) enable escaping, 1 = enabled (default), disabled otherwise
+#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
 # Output:
 #   STDOUT - variable names separated by newlines
 # Returns:
@@ -169,7 +169,7 @@ get_missing () {
 #   1 - otherwise
 get_defined () {
   local input="$1"
-  local do_escape="${2:-1}"
+  local do_escape="${2:-0}"
 
   local ref_vars defined_vars
   ref_vars=( $(get_referenced "$input" "$do_escape") )

@@ -82,9 +82,9 @@ fixtures lib
   [ "$output" == '' ]
 }
 
-@test 'get_referenced() handles escaping by default' {
+@test 'get_referenced() does not handle escaping by default' {
   local template='\$a'
   run get_referenced "$template"
-  [ "$status" -eq 1 ]
-  [ "$output" == '' ]
+  [ "$status" -eq 0 ]
+  [ "$output" == 'a' ]
 }

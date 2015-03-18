@@ -38,10 +38,10 @@ load "$LIB_DIR/zhu-li.sh"
   [ "$output" == '' ]
 }
 
-@test 'get_defined() handles escaping by default' {
+@test 'get_defined() does not handle escaping by default' {
   export defined=1
   local template='\$defined'
   run get_defined "$template"
-  [ "$status" -eq 1 ]
-  [ "$output" == '' ]
+  [ "$status" -eq 0 ]
+  [ "$output" == 'defined' ]
 }

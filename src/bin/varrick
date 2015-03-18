@@ -178,7 +178,7 @@ if [ "$_d8e1_OPT_SUMMARY" -eq 1 ]; then
       printf "%s\n" "${_d8e1_ESCAPED[@]}"
     fi
   fi
-  _d8e1_REFERENCED=( $(get_referenced "$_d8e1_INPUT" $_d8e1_OPT_ESCAPE) )
+  _d8e1_REFERENCED=( $(get_referenced "$_d8e1_INPUT" "$_d8e1_OPT_ESCAPE") )
   if [ "$?" -eq 0 ]; then
     echo "Referenced variables:"
     printf "%s\n" "${_d8e1_REFERENCED[@]}"
