@@ -53,24 +53,24 @@ are encountered.
 
 ## ESCAPING
 
-Variable references can be escaped to prevent expansion using a slash `\`.
+Variable references can be escaped to prevent expansion using a backslash `\`.
 
     $ export name=value
     $ echo '\$name' | varrick -x
     $name
 
-If a slash appears in a non-escping position, i.e. not immediately before a
+If a backslash appears in a non-escping position, i.e. not immediately before a
 variable reference, it has to be escaped.
 
     $ echo 'text \\ text' | varrick -x
     text \ text
 
 When turning a file into a template, it is recommended to first escape all
-slashes and strings that may be mistaken for references if necessary.
+backslashes and strings that may be mistaken for references if necessary.
 
     $ varrick -p < config.conf > config.conf.tmpl
 
-Escaping slashes in the substituted values is not necessary.
+Escaping backslashes in the substituted values is not necessary.
 
 
 ## EXIT STATUS

@@ -117,14 +117,14 @@ are encountered.</p>
 
 <h2 id="ESCAPING">ESCAPING</h2>
 
-<p>Variable references can be escaped to prevent expansion using a slash <code>\</code>.</p>
+<p>Variable references can be escaped to prevent expansion using a backslash <code>\</code>.</p>
 
 <pre><code>$ export name=value
 $ echo '\$name' | varrick -x
 $name
 </code></pre>
 
-<p>If a slash appears in a non-escping position, i.e. not immediately before a
+<p>If a backslash appears in a non-escping position, i.e. not immediately before a
 variable reference, it has to be escaped.</p>
 
 <pre><code>$ echo 'text \\ text' | varrick -x
@@ -132,12 +132,12 @@ text \ text
 </code></pre>
 
 <p>When turning a file into a template, it is recommended to first escape all
-slashes and strings that may be mistaken for references if necessary.</p>
+backslashes and strings that may be mistaken for references if necessary.</p>
 
 <pre><code>$ varrick -p &lt; config.conf &gt; config.conf.tmpl
 </code></pre>
 
-<p>Escaping slashes in the substituted values is not necessary.</p>
+<p>Escaping backslashes in the substituted values is not necessary.</p>
 
 <h2 id="EXIT-STATUS">EXIT STATUS</h2>
 

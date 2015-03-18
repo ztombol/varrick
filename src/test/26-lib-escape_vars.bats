@@ -3,7 +3,7 @@
 load lib-test-helper
 
 # Correctness.
-@test 'escape_vars() escapes slashes in the given environment variables' {
+@test 'escape_vars() escapes backslashes in the given environment variables' {
   export var1='\' var2='\\'
   run bash <<EOCMD
     . "$LIB_DIR/zhu-li.sh"

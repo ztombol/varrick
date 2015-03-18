@@ -118,8 +118,8 @@ http {
 }
 ```
 
-Prepending a variable reference with a slash prevents its expansion. Of course,
-when escaping is enabled slashes has to be escaped too.
+Prepending a variable reference with a backslash prevents its expansion. Of
+course, when escaping is enabled backslashes has to be escaped too.
 
 ```
 http {
@@ -142,8 +142,8 @@ outputs the original, un-escaped snippet.
 $ varrick --escape nginx.conf.tmpl
 ```
 
-Note that only slashes and proper variable references need to be escaped. That
-is, the `$` in `\.php$` does not require escaping, nor would `${a-}`.
+Note that only backslashes and proper variable references need to be escaped.
+That is, the `$` in `\.php$` does not require escaping, nor would `${a-}`.
 
 
 ## Creating templates
@@ -160,7 +160,7 @@ varrick --summary my.conf
 If the output is empty, then there are no strings that could be mistaken for a
 variable reference and you can skip to the next step.
 
-Otherwise, escape the variable references and slashes.
+Otherwise, escape the variable references and backslashes.
 
 ```
 varrick --preprocess my.conf my.conf.tmpl
@@ -184,7 +184,7 @@ varrick --summary my.conf.tmpl
 
 To also list variables of escaped references, add `--escape`.
 
-If you added escaped references or slashes you can also check if your escaping
+If you added escaped references or backslashes you can also check if your escaping
 is correct.
 
 ```

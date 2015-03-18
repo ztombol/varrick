@@ -5,7 +5,7 @@ load "$LIB_DIR/zhu-li.sh"
 fixtures lib
 
 # Correctness.
-@test 'preprocess() escapes slashes and variable references' {
+@test 'preprocess() escapes backslashes and variable references' {
   local template="$(cat "$FIXTURE_ROOT/pre_process.tmpl")"
   run preprocess "$template"
   [ "$status" -eq 0 ]

@@ -204,8 +204,8 @@ escape () {
   sed -r 's/((^|[^\])(\\\\)*)(\\)'"$ref"'/\1$\4\5/g'
 }
 
-# Remove slashes escaping references and slashes from the template read from
-# STDIN. This is necessary after expanding a template that contains escape
+# Remove backslashes and backslashes escaping references from the template read
+# from STDIN. This is necessary after expanding a template that contains escape
 # sequences.
 #
 # Globals:
@@ -222,16 +222,16 @@ unescape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref_no_ds='('"${name}"'|\{'"${name}"'\})'
 
-  # 1. Remove slash from escaped references: $\var   -> $var
-  #                                          $\{var} -> ${var}
-  # 2. Remove slash from escaped slashes: \\ -> \
+  # 1. Remove backslash from escaped references: $\var   -> $var
+  #                                              $\{var} -> ${var}
+  # 2. Remove backslash from escaped backslashes: \\ -> \
   sed -r -e 's/\$\\'"${ref_no_ds}"'/\$\1/g' \
          -e 's/\\\\/\\/g'
 }
 
-# Escape slashes in the given environment variables. This is necessary before
-# expanding a template containing escape sequences to cancel out the effect of
-# `unescape()' on substituted values.
+# Escape backslashes in the given environment variables. This is necessary
+# before expanding a template containing escape sequences to cancel out the
+# effect of `unescape()' on substituted values.
 #
 # Globals:
 #   none
@@ -290,7 +290,7 @@ check_esc () {
   return $error
 }
 
-# Escape variable references and slashes in the given string. Useful for
+# Escape variable references and backslashes in the given string. Useful for
 # preprocessing a file before turning it into a template. Preprocessing a string
 # that does not require escaping leaves the string unchanged.
 #
@@ -310,7 +310,7 @@ preprocess () {
 
   get_referenced "$input" 0 > /dev/null
   if [ "$?" -eq 0 ]; then
-    # 1. escape slashes: \ -> \\
+    # 1. escape backslashes: \ -> \\
     # 2. escape references: $var   -> \$var
     #                       ${var} -> \${var}
     echo "$input" | sed -r -e 's/\\/\\&/g' \
