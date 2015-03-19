@@ -150,42 +150,42 @@ That is, the `$` in `\.php$` does not require escaping, nor would `${a-}`.
 
 ### Preprocessing
 
-First, check whether the template will require escaping. To do this, list the
-variables referenced in the file you want to parametrise.
+First, if you are planning to use escaped references or the source file contains
+strings that may be mistaken for references, you need to preprocess the source
+and escape backslashes and reference-looking strings.
+
+To determine whether the source contains references, list the variables
+referenced.
 
 ```
 varrick --summary my.conf
 ```
 
-If the output is empty, then there are no strings that could be mistaken for a
-variable reference and you can skip to the next step.
+If the output is empty, then there are no strings that look like variable
+references. Unless you want to use escaping you can skip to the next step.
 
-Otherwise, escape the variable references and backslashes.
+To escape variable references and backslashes.
 
 ```
 varrick --preprocess my.conf my.conf.tmpl
 ```
 
-It does not hurt to run this on input that requires no escaping. However,
-knowing if it was required or not is necessary when later expanding the
-template.
-
 
 ### Adding variable references
 
-Now you can edit the template and add the variable references you need.
+After making sure that the source is escaped where needed, you can edit it and
+add the variable references you need.
 
 Finally, double check that the template is correct by reviewing the list of
-variables referenced.
+variables referenced. If you are using escaping add `--escape` to list the
+escaped variable references as well.
 
 ```
 varrick --summary my.conf.tmpl
 ```
 
-To also list variables of escaped references, add `--escape`.
-
-If you added escaped references or backslashes you can also check if your escaping
-is correct.
+When using escaping, you can check whether the added backslashes or escaped
+references are correctly escaped.
 
 ```
 varrick --check my.conf.tmpl

@@ -40,8 +40,7 @@ are encountered.
     Report undefined variables and exit. Mutually exclusive with *-e*.
 
 * `-p`, `--preprocess`:
-    Escape input if it contains variable references and exit. Otherwise, leave
-    it unmodified.
+    Escape variable references and backslashes and exit.
 
 * `-s`, `--summary`:
     Print a list of referenced variables and exit. When used together with `-x`

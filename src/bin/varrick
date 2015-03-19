@@ -67,7 +67,7 @@ Options:
   -c, --check       Look for invalid escape sequences and exit.
   -e, --no-expand   Do not expand variables that are not defined.
   -m, --missing     Report undefined variables and exit.
-  -p, --preprocess  Escape input if it contains variable references and exit.
+  -p, --preprocess  Escape variable references and backslashes and exit.
   -s, --summary     Print a list of referenced variables and exit.
   -x, --escape      Allow escaping variable references with a backslash.
 EOHELP

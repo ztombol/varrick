@@ -21,16 +21,3 @@ fixtures lib
   [ "${lines[8]}" == '${a1-}' ]
   [ "${lines[9]}" == '\${a1}' ]
 }
-
-# Interface.
-@test 'preprocess() returns 0 when escaping was applied' {
-  local template='$a'
-  run preprocess "$template"
-  [ "$status" -eq 0 ]
-}
-
-@test 'preprocess() returns 1 when escaping was not applied' {
-  local template=''
-  run preprocess "$template"
-  [ "$status" -eq 1 ]
-}

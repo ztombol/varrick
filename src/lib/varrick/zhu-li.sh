@@ -291,8 +291,7 @@ check_esc () {
 }
 
 # Escape variable references and backslashes in the given string. Useful for
-# preprocessing a file before turning it into a template. Preprocessing a string
-# that does not require escaping leaves the string unchanged.
+# preprocessing a file before turning it into a template.
 #
 # Globals:
 #   none
@@ -301,24 +300,15 @@ check_esc () {
 # Output:
 #   STDOUT - pre-processed template string
 # Returns:
-#   0 - escaping was necessary
-#   1 - otherwise
+#   none
 preprocess () {
   local input="$1"
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
 
-  get_referenced "$input" 0 > /dev/null
-  if [ "$?" -eq 0 ]; then
-    # 1. escape backslashes: \ -> \\
-    # 2. escape references: $var   -> \$var
-    #                       ${var} -> \${var}
-    echo "$input" | sed -r -e 's/\\/\\&/g' \
-                           -e 's/'"$ref"'/\\&/g'
-    return 0
-  else
-    # Escaping not necessary.
-    echo "$input"
-    return 1
-  fi
+  # 1. escape backslashes: \ -> \\
+  # 2. escape references: $var   -> \$var
+  #                       ${var} -> \${var}
+  echo "$input" | sed -r -e 's/\\/\\&/g' \
+                         -e 's/'"$ref"'/\\&/g'
 }
