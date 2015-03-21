@@ -192,7 +192,7 @@ if [ "$_d8e1_OPT_CHECK" -eq 1 ]; then
 fi
 
 if [ "$_d8e1_OPT_MISSING" -eq 1 ]; then
-  _d8e1_MISS=( $(get_missing "$_d8e1_INPUT") )
+  _d8e1_MISS=( $(get_missing "$_d8e1_INPUT" "$_d8e1_OPT_ESCAPE") )
   if [ "$?" -eq 0 ]; then
     echo "Error: the variables below are referenced but not defined!"
     printf "%s\n" "${_d8e1_MISS[@]}"
@@ -202,7 +202,7 @@ fi
 
 unset _d8e1_SHELL_FORMAT
 if [ "$_d8e1_OPT_EXPAND" -eq 1 ]; then
-  _d8e1_DEFINED=( $(get_defined "$_d8e1_INPUT") )
+  _d8e1_DEFINED=( $(get_defined "$_d8e1_INPUT" "$_d8e1_OPT_ESCAPE") )
   if [ "$?" -eq 0 ]; then
     _d8e1_SHELL_FORMAT="$(printf '$%s' "${_d8e1_DEFINED[@]}")"
   else
