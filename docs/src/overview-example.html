@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>Overview - Example</title>
+    <link href="css/github-codeblock.css" type="text/css" rel="stylesheet">
+    <link href="css/github-highlight.css" type="text/css" rel="stylesheet">
+  </head>
+<body>
+
+<table id="capture">
+  <thead>
+    <tr>
+      <th>Turn this...</th>
+      <th></th>
+      <th>with Varrick...</th>
+      <th></th>
+      <th>into this!</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <div class="highlight highlight-Nginx">
+          <!-- BEGIN TEMPLATE -->
+          <pre>
+<span class="pl-k">error_log</span> <span class="pl-smi">$DIR</span>/error.log;
+
+<span class="pl-k">http</span> {
+  <span class="pl-c"># PHP pages.</span>
+  <span class="pl-k">location</span> ~ <span class="pl-sr">\\.php$ </span>{
+    <span class="pl-k">try_files</span> <span class="pl-smi">\$uri</span> = <span class="pl-s">404</span>;
+  }
+}
+</pre>
+          <!-- END TEMPLATE -->
+        </div>
+      </td>
+      <td class="separator">+</td>
+      <td>
+        <div class="highlight highlight-Shell">
+          <!-- BEING COMMAND -->
+          <pre>
+$ <span class="pl-k">export</span> DIR=/log
+$ varrick -x nginx.tmpl
+</pre>
+          <!-- END COMMAND -->
+        </div>
+      </td>
+      <td class="separator">=</td>
+      <td>
+        <div class="highlight highlight-Nginx">
+          <!-- BEGIN RESULT -->
+          <pre>
+<span class="pl-k">error_log</span> /log/error.log;
+
+<span class="pl-k">http</span> {
+  <span class="pl-c"># PHP pages.</span>
+  <span class="pl-k">location</span> ~ <span class="pl-sr">\.php$ </span>{
+    <span class="pl-k">try_files</span> <span class="pl-smi">$uri</span> = <span class="pl-s">404</span>;
+  }
+}
+</pre>
+          <!-- END RESULT -->
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

@@ -5,6 +5,8 @@ Varrick is a convenient template engine written in shell script and using
 environment variables using `envsubst`, while offering advanced features, e.g.
 escaping support, over that of `envsubst`.
 
+![Varrick in action](docs/img/overview-example.png)
+
 Varrick was primarily made to simplify configuration of Linux containers, but
 can be used for other purposes as well.
 
