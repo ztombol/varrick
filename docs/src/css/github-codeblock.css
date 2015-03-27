@@ -1,0 +1,50 @@
+/* Horizontal codeblocks in GitHub README style. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font: 16px 'Liberation Sans';
+  color: #333;
+  line-height: 1.6;
+  margin: 0px;
+  width: 728px;
+}
+
+pre {
+  font: 12px 'Liberation Mono';
+  word-wrap: normal;
+  margin-top: 0;
+}
+
+.highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+tr, td {
+  padding: 0px;
+}
+
+th {
+  font-style: italic;
+  font-weight: normal;
+  padding: 4px 4px 8px;
+}
+
+td.separator {
+  font-size: 140%;
+  text-align: center;
+  width: 20px;
+}

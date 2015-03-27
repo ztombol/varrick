@@ -1,5 +1,7 @@
 export SRCDIR      ?= ./src
 export DOCSDIR     ?= ./docs
+export SCRIPTDIR   ?= ./script
+
 export DESTDIR     ?= /
 export PREFIX      ?= usr/local
 export EXEC_PREFIX ?= $(PREFIX)
@@ -18,15 +20,27 @@ man: $(patsubst %.ronn,%,$(wildcard $(SRCDIR)/man/*.ronn)) ;
 $(SRCDIR)/man/%: $(SRCDIR)/man/%.ronn
 	ronn --warnings --roff $<
 
+.PHONY: docs
+docs: docs-man docs-img
+
 # Generate HTML format man pages from './$(SRCDIR)/man/*.ronn' in
 # './$(DOCSDIR)/man'.
-.PHONY: docs
-docs: $(patsubst $(SRCDIR)/man/%.ronn,$(DOCSDIR)/man/%.html,\
+.PHONY: docs-man
+docs-man: $(patsubst $(SRCDIR)/man/%.ronn,$(DOCSDIR)/man/%.html,\
 	         $(wildcard $(SRCDIR)/man/*))
 
 $(DOCSDIR)/man/%.html: $(SRCDIR)/man/%.ronn
 	ronn --warnings --html $<
 	mv $(<:.ronn=.html) $(DOCSDIR)/man
+
+# Rasterise './$(DOCSDIR)/src/*.html' and save in PNG format in
+# './$(DOCSDIR)/img'
+.PHONY: docs-img
+docs-img: $(patsubst $(DOCSDIR)/src/%.html,$(DOCSDIR)/img/%.png,\
+	             $(wildcard $(DOCSDIR)/src/*.html)) ;
+
+$(DOCSDIR)/img/%.png: $(DOCSDIR)/src/%.html
+	phantomjs "$(SCRIPTDIR)/capture.js" "$<" "$@"
 
 .PHONY: install
 install:
