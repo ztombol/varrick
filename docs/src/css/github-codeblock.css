@@ -1,5 +1,8 @@
 /* Horizontal codeblocks in GitHub README style. */
 
+@import url(fonts/liberation/mono.css);
+@import url(fonts/liberation/sans.css);
+
 * {
   box-sizing: border-box;
 }

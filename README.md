@@ -210,6 +210,11 @@ Varrick is licensed under [GPLv3][gplv3]. Contribution of any kind is welcome.
 If you find any bugs or have suggestions, open an issue or pull request on the
 projects [GitHub page][varrick-gh].
 
+*Liberation Sans* and *Liberation Mono*, the fonts used in images, are licenced
+under [SIL Open Font Licence Version 1.1][sil-ofl]. These fonts were downloaded
+from [Fedora Hosted][liberation-fedora] and are included in the source code
+distribution of Varrick along with their [license][local-liberation-license].
+
 
 ## Conventions
 
@@ -277,3 +282,6 @@ behind Varrick is called *"Zhu-Li"*.
 [git-contrib]: https://github.com/git/git/blob/master/Documentation/SubmittingPatches
 [gh-markdown]: https://help.github.com/articles/github-flavored-markdown/
 [ronn-hp]: https://rtomayko.github.io/ronn/
+[liberation-fedora]: https://fedorahosted.org/liberation-fonts/
+[sil-ofl]: http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL
+[local-liberation-license]: docs/src/css/fonts/liberation/LICENSE
