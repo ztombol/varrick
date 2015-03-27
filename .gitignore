@@ -1,2 +1,8 @@
+# Editor temp files.
 *.sw[[po]
+
+# Roff format pages.
 src/man/*.[0-9]
+
+# Arch linux packages.
+pkgs/arch-linux/*/*.pkg.tar.xz
