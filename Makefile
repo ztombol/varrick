@@ -106,7 +106,7 @@ TARGETS:
 
   For developers:
     man      generate ROFF format man pages (build-time)
-    docs     generate HTML format man pages (after editing man pages)
+    docs     generate HTML format man pages and images (after editing man pages)
 
 
 ENVIRONMENT:
