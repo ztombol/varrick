@@ -1,4 +1,5 @@
 # Maintainer: Zoltan Tombol <zoltan (dot) tombol (at) gmail (dot) com>
+
 pkgname=varrick
 pkgver=0.1.0
 pkgrel=1
@@ -6,11 +7,10 @@ pkgdesc="A convenient template engine to just 'Do the thing!'"
 arch=(any)
 url="https://github.com/ztombol/varrick"
 license=('GPL3')
-depends=('bash' 'util-linux' 'coreutils' 'gettext' 'sed')
+depends=('bash' 'sed')
 makedepends=('git' 'ruby-ronn')
 checkdepends=('bats-git')
-conflicts=('varrick-git')
-#changelog=
+conflicts=("${pkgname}-git")
 source=("$pkgname::git+https://github.com/ztombol/$pkgname#tag=v$pkgver")
 sha512sums=('SKIP')
 
