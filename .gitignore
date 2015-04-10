@@ -4,5 +4,6 @@
 # Roff format pages.
 src/man/*.[0-9]
 
-# Arch linux packages.
-pkgs/arch-linux/*/*.pkg.tar.xz
+# Arch Linux packages and source-only tarballs.
+pkgs/arch-linux/**/*.pkg.tar.xz
+pkgs/arch-linux/**/*.src.tar.gz
