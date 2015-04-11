@@ -1,8 +1,33 @@
+v0.2.0 / 2015-04-11 / Manta Ray -<`-`>
+
+    "Manta Ray, a cleaning station visiting, breaching, clever, curious
+     and magnificent creature that is vulnerable to extinction due to
+     overfishing."
+
+         -- from https://en.wikipedia.org/wiki/Manta_ray
+
+
+  - [DOCS] Improved documentation
+  - [DOCS] Update contribution guidelines regarding man pages
+  - [DOCS] Add man page
+  - [FIX] Fix escape handling for --no-expand and --missing
+  - [LIB] Make prerpocess() always escape the input
+  - [LIB] Disable escaping by default in library functions
+  - [PKG] Add Arch Linux packages
+  - [PKG] Add Makefile
+
+
 v0.1.0 / 2015-03-06 / Axolotl >(`-`)<
 
-  * [FEATURE] not expanding undefined variables
-  * [FEATURE] listing undefined variables
-  * [FEATURE] enabling escaping variable references
-  * [FEATURE] listing referenced and escaped variables
-  * [FEATURE] reporting lines containing invalid escape sequences
-  * [FEATURE] escaping input if it contains variable references
+    "Axolotl, a cancer-resisting, regenerating cute little animal that
+     is now unfortunately extinct in the wild."
+
+         -- from https://en.wikipedia.org/wiki/Axolotl
+
+
+  - [FEAT] not expanding undefined variables
+  - [FEAT] listing undefined variables
+  - [FEAT] enabling escaping variable references
+  - [FEAT] listing referenced and escaped variables
+  - [FEAT] reporting lines containing invalid escape sequences
+  - [FEAT] escaping input if it contains variable references
