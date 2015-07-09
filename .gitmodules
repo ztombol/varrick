@@ -1,0 +1,6 @@
+[submodule "pkgs/arch-linux/varrick"]
+	path = pkgs/arch-linux/varrick
+	url = https://github.com/ztombol/pkg-arch-varrick.git
+[submodule "pkgs/arch-linux/varrick-git"]
+	path = pkgs/arch-linux/varrick-git
+	url = https://github.com/ztombol/pkg-arch-varrick-git.git
