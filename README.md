@@ -287,7 +287,7 @@ variables.
 
 Varrick is licensed under [GPLv3][gplv3]. Contribution of any kind is welcome.
 If you find any bugs or have suggestions, open an issue or a pull request on the
-projects [GitHub page][varrick-gh]. See the contribution guidelines below.
+project's [GitHub page][varrick-gh]. See the contribution guidelines below.
 
 The following assets are provided by other projects and fall under different
 licences.
