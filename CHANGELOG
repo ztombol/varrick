@@ -25,9 +25,9 @@ v0.1.0 / 2015-03-06 / Axolotl >(`-`)<
          -- from https://en.wikipedia.org/wiki/Axolotl
 
 
-  - [FEAT] not expanding undefined variables
-  - [FEAT] listing undefined variables
-  - [FEAT] enabling escaping variable references
-  - [FEAT] listing referenced and escaped variables
-  - [FEAT] reporting lines containing invalid escape sequences
-  - [FEAT] escaping input if it contains variable references
+  - [FEAT] Not expanding undefined variables
+  - [FEAT] Listing undefined variables
+  - [FEAT] Enabling escaping variable references
+  - [FEAT] Listing referenced and escaped variables
+  - [FEAT] Reporting lines containing invalid escape sequences
+  - [FEAT] Escaping input if it contains variable references
