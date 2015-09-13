@@ -1,14 +1,15 @@
+# Project parameters.
 export SRCDIR      ?= ./src
 export DOCSDIR     ?= ./docs
 export SCRIPTDIR   ?= ./script
 
-export DESTDIR     ?= /
-export PREFIX      ?= usr/local
-export EXEC_PREFIX ?= $(PREFIX)
-export BINDIR      ?= $(EXEC_PREFIX)/bin
-export LIBEXECDIR  ?= $(EXEC_PREFIX)/libexec
-export DATAROOTDIR ?= $(PREFIX)/share
-export MANDIR      ?= $(DATAROOTDIR)/man
+# Installation parameters.
+export prefix      ?= /usr/local
+export exec_prefix ?= $(prefix)
+export bindir      ?= $(exec_prefix)/bin
+export libdir      ?= $(prefix)/lib
+export datarootdir ?= $(prefix)/share
+export mandir      ?= $(datarootdir)/man
 
 .PHONY: build
 build: man
@@ -27,7 +28,7 @@ docs: docs-man docs-img
 # './$(DOCSDIR)/man'.
 .PHONY: docs-man
 docs-man: $(patsubst $(SRCDIR)/man/%.ronn,$(DOCSDIR)/man/%.html,\
-	         $(wildcard $(SRCDIR)/man/*))
+	             $(wildcard $(SRCDIR)/man/*)) ;
 
 $(DOCSDIR)/man/%.html: $(SRCDIR)/man/%.ronn
 	ronn --warnings --html $<
@@ -46,8 +47,8 @@ $(DOCSDIR)/img/%.png: $(DOCSDIR)/src/%.html
 install:
 # Summary
 	@echo '-> Parameters'; \
-	vars=(SRCDIR DESTDIR PREFIX EXEC_PREFIX BINDIR LIBEXECDIR DATAROOTDIR \
-	      MANDIR); \
+	vars=(SRCDIR DESTDIR prefix exec_prefix bindir libdir datarootdir \
+	      mandir); \
 	for var in "$${vars[@]}"; do \
 	  printf '  %-11s = %s\n' $$var $${!var}; \
 	done; \
@@ -61,8 +62,8 @@ install:
 	depth="$$(echo "$$srcdir/" | grep -o '/' | wc -l)"; \
 	IFS=$$'\n'; for file in $$(find "$$srcdir" -type f); do \
 	  file_dest="$$(echo "$$file" | sed -r 's:([^/]*/){'"$$depth"'}::')"; \
-	  echo "$(BINDIR)/$${file_dest}"; \
-	  install -Dm755 "$$file" "$(DESTDIR)/$(BINDIR)/$${file_dest}"; \
+	  echo "$(bindir)/$${file_dest}"; \
+	  install -Dm755 "$$file" "$(DESTDIR)$(bindir)/$${file_dest}"; \
 	done
 	
 # Install libraries, i.e. all files in './$(SRCDIR)/lib' recursively.
@@ -71,8 +72,8 @@ install:
 	depth="$$(echo "$$srcdir/" | grep -o '/' | wc -l)"; \
 	IFS=$$'\n'; for file in $$(find "$$srcdir" -type f); do \
 	  file_dest="$$(echo "$$file" | sed -r 's:([^/]*/){'"$$depth"'}::')"; \
-	  echo "$(LIBEXECDIR)/$${file_dest}"; \
-	  install -Dm644 "$$file" "$(DESTDIR)/$(LIBEXECDIR)/$${file_dest}"; \
+	  echo "$(libdir)/$${file_dest}"; \
+	  install -Dm644 "$$file" "$(DESTDIR)$(libdir)/$${file_dest}"; \
 	done
 	
 # Install man pages, i.e. all files in './$(SRCDIR)/man' without '.ronn'
@@ -80,9 +81,9 @@ install:
 	@srcdir="$(SRCDIR)/man" ; \
 	for file in "$$(ls "$$srcdir" | grep -v '\.ronn$$')"; do \
 	  file_dest="man$${file: -1}/$${file}"; \
-	  echo "$(MANDIR)/$${file_dest}"; \
+	  echo "$(mandir)/$${file_dest}"; \
 	  install -Dm644 "$${srcdir}/$${file}" \
-	                 "$(DESTDIR)/$(MANDIR)/$${file_dest}"; \
+	                 "$(DESTDIR)$(mandir)/$${file_dest}"; \
 	done
 
 .PHONY: check
@@ -116,12 +117,12 @@ ENVIRONMENT:
     in the GNU Make manual. [1] [2]
 
       DESTDIR     = /
-      PREFIX      = /usr/local
-      EXEC_PREFIX = $$(PREFIX)
-      BINDIR      = $$(EXEC_PREFIX)/bin
-      LIBEXECDIR  = $$(EXEC_PREFIX)/libexec
-      DATAROOTDIR = $$(PREFIX)/share
-      MANDIR      = $$(DATAROOTDIR)/man
+      prefix      = /usr/local
+      exec_prefix = $$(prefix)
+      bindir      = $$(exec_prefix)/bin
+      libdir      = $$(prefix)/lib
+      datarootdir = $$(prefix)/share
+      mandir      = $$(datarootdir)/man
 
   For developers:
     The following variables may only be interesting to developers.
@@ -136,10 +137,7 @@ EXAMPLES:
   man pages in `/usr/share/man'.
 
     $ make build
-    $ make DESTDIR='.' \
-	   PREFIX='/usr' \
-	   LIBEXECDIR='/usr/lib' \
-	   install
+    $ make prefix='/usr' install
 
 
 REFERENCES:
