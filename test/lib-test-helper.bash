@@ -5,4 +5,4 @@ fixtures () {
 }
 
 # Set library location.
-LIB_DIR="$BATS_TEST_DIRNAME/../lib/varrick"
+LIB_DIR="$BATS_TEST_DIRNAME/../src/lib/varrick"

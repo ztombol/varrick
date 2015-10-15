@@ -1,5 +1,6 @@
 # Project parameters.
 export SRCDIR      ?= ./src
+export TESTDIR     ?= ./test
 export DOCSDIR     ?= ./docs
 export SCRIPTDIR   ?= ./script
 
@@ -41,7 +42,7 @@ clean:
 
 .PHONY: check
 check:
-	bats '$(SRCDIR)/test'
+	bats '$(TESTDIR)'
 
 
 ########################################################################

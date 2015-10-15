@@ -7,7 +7,7 @@ fixtures () {
 # Create a temporary directory and set path of executable to test.
 setup () {
   export TMP="$(mktemp --directory --tmpdir="$BATS_TMPDIR" "bats-expand-template-$BATS_TEST_NAME.XXXXXXXXXX")"
-  export EXEC="$BATS_TEST_DIRNAME/../bin/varrick"
+  export EXEC="$BATS_TEST_DIRNAME/../src/bin/varrick"
 }
 
 # Delete the temporary directory.
