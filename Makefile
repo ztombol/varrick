@@ -7,6 +7,7 @@ export SCRIPTDIR   ?= ./script
 export prefix      ?= /usr/local
 export exec_prefix ?= $(prefix)
 export bindir      ?= $(exec_prefix)/bin
+export libexecdir  ?= $(exec_prefix)/libexec
 export libdir      ?= $(prefix)/lib
 export datarootdir ?= $(prefix)/share
 export mandir      ?= $(datarootdir)/man
@@ -90,16 +91,22 @@ docs-clean:
 ########################################################################
 
 .PHONY: install
-install:
-#	Sumamry.
+install: install-params install-files install-update
+
+# Display parameters used.
+.PHONY: install-params
+install-params:
 	@echo '-> Parameters'; \
-	vars=(SRCDIR DESTDIR prefix exec_prefix bindir libdir datarootdir \
-	      mandir); \
+	vars=(SRCDIR DESTDIR prefix exec_prefix bindir libexecdir libdir \
+	      datarootdir mandir); \
         for var in "$${vars[@]}"; do \
 	  printf '  %-11s = %s\n' "$${var}" "$${!var}"; \
 	done; \
 	echo
 
+# Install program files.
+.PHONY: install-files
+install-files:
 	@echo '-> Installing files'
 
 #	Install executables.
@@ -108,6 +115,16 @@ install:
 	@for src in '$(SRCDIR)/bin'/*; do \
 	  src_file="$$(basename "$${src}")"; \
 	  dst='$(DESTDIR)$(bindir)/'"$${src_file}"; \
+	  echo "  $${dst}"; \
+	  install -Dm755 "$${src}" "$${dst}"; \
+	done
+
+#	Install internal executables.
+#	  from: $(SRCDIR)/libexec/*
+#	  to  : $(DESTDIR)$(libexecdir)/*
+	@for src in '$(SRCDIR)/libexec'/*; do \
+	  src_file="$$(basename "$${src}")"; \
+	  dst='$(DESTDIR)$(libexecdir)/'"$${src_file}"; \
 	  echo "  $${dst}"; \
 	  install -Dm755 "$${src}" "$${dst}"; \
 	done
@@ -133,12 +150,25 @@ install:
 	  install -Dm644 "$${src}" "$${dst}"; \
 	done
 
+# Update installed files.
+.PHONY: install-update
+install-update:
+	@echo '-> Updating files' \
+
+#	Update launcher paths.
+	@file='$(DESTDIR)$(bindir)/varrick'; \
+	echo "  $$file"; \
+	sed -r -e '/^_d8e1_BIN_DIR=".*"$$/ d' \
+	       -e 's;^(export _d8e1_LIB_DIR)=".*"$$;\1='\''$(libdir)'\'';' \
+	       -e 's;^(export _d8e1_LIBEXEC_DIR)=".*"$$;\1='\''$(libexecdir)'\'';' \
+	    -i "$$file"
+
 
 ########################################################################
 #                                 HELP
 ########################################################################
 
-define HELP_TEXT
+define HELP_TEXT =
 TARGETS:
 
   For packagers:
@@ -163,6 +193,7 @@ ENVIRONMENT:
       prefix      = /usr/local
       exec_prefix = $$(prefix)
       bindir      = $$(exec_prefix)/bin
+      libexecdir  = $$(exec_prefix)/libexec
       libdir      = $$(prefix)/lib
       datarootdir = $$(prefix)/share
       mandir      = $$(datarootdir)/man
@@ -176,11 +207,13 @@ ENVIRONMENT:
 
 EXAMPLES:
 
-  Build and then install execuatables in `/usr/bin', libraries in `/usr/lib' and
-  man pages in `/usr/share/man'.
+  Build, and then install execuatables in `/usr/bin' and `/usr/lib/varrick',
+  libraries in `/usr/lib/varrick' and man pages in `/usr/share/man'.
 
-    $ make build
-    $ make prefix='/usr' install
+    $$ make build
+    $$ make prefix='/usr' \ 
+           libexecdir='/usr/lib' \ 
+           install
 
 
 REFERENCES:
