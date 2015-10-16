@@ -138,8 +138,8 @@ load make-test-helper
   # Launcher.
   local file="${DESTDIR}${bindir}/varrick"
   [ "${lines[1]}" == "  $file" ]
-  assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIBEXEC_DIR' "$libexecdir"
-  assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIB_DIR' "$libdir"
+  assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIBEXEC_DIR' "${libexecdir}/varrick"
+  assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIB_DIR' "${libdir}/varrick"
 }
 
 @test "make <path...> install: install the application" {
@@ -169,7 +169,7 @@ load make-test-helper
 
   # Test paths.
   run env -i bash -c "cd '${MAIN_DIR}/${DESTDIR}'; \
-                      echo 'The thing! Do the thing!' | ${bindir}/varrick"
+                      echo 'The thing! Do the thing!' | '${bindir}/varrick'"
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 1 ]
   [ "$output" == 'The thing! Do the thing!' ]
@@ -215,10 +215,11 @@ installed_files_bin () {
 # Outputs:
 #   STDOUT - list of paths
 installed_files_libexec () {
-  local src src_file
-  for src in "${SRCDIR}/libexec"/*; do
-    src_file="$(basename "$src")"
-    echo "${DESTDIR}${libexecdir}/${src_file}"
+  local src_base="${SRCDIR}/libexec"
+  local IFS=$'\n'
+  local src
+  for src in $(find "$src_base" -type f); do
+    echo "${DESTDIR}${libexecdir}${src#${src_base}}"
   done
 }
 

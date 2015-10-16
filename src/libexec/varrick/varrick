@@ -150,7 +150,7 @@ fi
 ################################################################################
 
 # Load libraries.
-. "${_d8e1_LIB_DIR}/varrick/zhu-li.sh"
+. "${_d8e1_LIB_DIR}/zhu-li.sh"
 
 # Handle options.
 if [ "$_d8e1_OPT_SUMMARY" -eq 1 ]; then

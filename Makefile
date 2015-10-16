@@ -120,12 +120,13 @@ install-files:
 	  install -Dm755 "$${src}" "$${dst}"; \
 	done
 
-#	Install internal executables.
+#	Install internal executables (recursively).
 #	  from: $(SRCDIR)/libexec/*
 #	  to  : $(DESTDIR)$(libexecdir)/*
-	@for src in '$(SRCDIR)/libexec'/*; do \
-	  src_file="$$(basename "$${src}")"; \
-	  dst='$(DESTDIR)$(libexecdir)/'"$${src_file}"; \
+	@src_base='$(SRCDIR)/libexec'; \
+	IFS=$$'\n'; \
+	for src in $$(find "$${src_base}" -type f); do \
+	  dst='$(DESTDIR)$(libexecdir)'"$${src#$${src_base}}"; \
 	  echo "  $${dst}"; \
 	  install -Dm755 "$${src}" "$${dst}"; \
 	done
@@ -160,8 +161,8 @@ install-update:
 	@file='$(DESTDIR)$(bindir)/varrick'; \
 	echo "  $$file"; \
 	sed -r -e '/^_d8e1_BIN_DIR=".*"$$/ d' \
-	       -e 's;^(export _d8e1_LIB_DIR)=".*"$$;\1='\''$(libdir)'\'';' \
-	       -e 's;^(export _d8e1_LIBEXEC_DIR)=".*"$$;\1='\''$(libexecdir)'\'';' \
+	       -e 's;^(export _d8e1_LIB_DIR)=".*"$$;\1='\''$(libdir)/varrick'\'';' \
+	       -e 's;^(export _d8e1_LIBEXEC_DIR)=".*"$$;\1='\''$(libexecdir)/varrick'\'';' \
 	    -i "$$file"
 
 

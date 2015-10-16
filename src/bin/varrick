@@ -42,8 +42,8 @@ fi
 
 # Set up environment. Automatically updated during installation.
 _d8e1_BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export _d8e1_LIBEXEC_DIR="${_d8e1_BIN_DIR}/../libexec"
-export _d8e1_LIB_DIR="${_d8e1_BIN_DIR}/../lib"
+export _d8e1_LIBEXEC_DIR="${_d8e1_BIN_DIR}/../libexec/varrick"
+export _d8e1_LIB_DIR="${_d8e1_BIN_DIR}/../lib/varrick"
 
 # Launch application.
 exec "${_d8e1_LIBEXEC_DIR}/varrick" "$@"
