@@ -1,8 +1,8 @@
 # Project parameters.
-export SRCDIR      ?= ./src
-export TESTDIR     ?= ./test
-export DOCSDIR     ?= ./docs
-export SCRIPTDIR   ?= ./script
+export SRCDIR    ::= ./src
+export TESTDIR   ::= ./test
+export DOCSDIR   ::= ./docs
+export SCRIPTDIR ::= ./script
 
 # Installation parameters.
 export prefix      ?= /usr/local
@@ -98,8 +98,8 @@ install: install-params install-files install-update
 .PHONY: install-params
 install-params:
 	@echo '-> Parameters'; \
-	vars=(SRCDIR DESTDIR prefix exec_prefix bindir libexecdir libdir \
-	      datarootdir mandir); \
+	vars=(DESTDIR prefix exec_prefix bindir libexecdir libdir datarootdir \
+	      mandir); \
         for var in "$${vars[@]}"; do \
 	  printf '  %-11s = %s\n' "$${var}" "$${!var}"; \
 	done; \
@@ -199,12 +199,6 @@ ENVIRONMENT:
       libdir      = $$(prefix)/lib
       datarootdir = $$(prefix)/share
       mandir      = $$(datarootdir)/man
-
-  For developers:
-    The following variables may only be interesting to developers.
-
-      DOCSDIR = ./docs   directory containing documentation, e.g. HTML man pages
-      SRCDIR  = ./src    path to directory containing the program source.
 
 
 EXAMPLES:

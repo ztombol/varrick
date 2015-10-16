@@ -4,7 +4,6 @@ load make-test-helper
 
 @test "make install-params: display the default paths" {
   # Paths.
-  local SRCDIR='./src'
   local DESTDIR=
   local prefix='/usr/local'
   local exec_prefix="${prefix}"
@@ -20,7 +19,7 @@ load make-test-helper
 
   # Output.
   [ "${lines[0]}" == '-> Parameters' ]
-  local -r vars=(SRCDIR DESTDIR prefix exec_prefix bindir libexecdir libdir
+  local -r vars=(DESTDIR prefix exec_prefix bindir libexecdir libdir
                  datarootdir mandir)
   local var i=1
   for var in "${vars[@]}"; do
@@ -32,7 +31,6 @@ load make-test-helper
 
 @test "make <path...> install-params: display custom paths" {
   # Paths.
-  local SRCDIR='./source'
   local DESTDIR='install'
   local prefix='/prefix'
   local exec_prefix="/exec_prefix"
@@ -44,8 +42,7 @@ load make-test-helper
 
   # Run command.
   run env -i bash -c "cd '$MAIN_DIR'; \
-                      make SRCDIR='$SRCDIR' \
-                           DESTDIR='$DESTDIR' \
+                      make DESTDIR='$DESTDIR' \
                            prefix='$prefix' \
                            exec_prefix='$exec_prefix' \
                            bindir='$bindir' \
@@ -58,7 +55,7 @@ load make-test-helper
 
   # Output.
   [ "${lines[0]}" == '-> Parameters' ]
-  local -r vars=(SRCDIR DESTDIR prefix exec_prefix bindir libexecdir libdir
+  local -r vars=(DESTDIR prefix exec_prefix bindir libexecdir libdir
                  datarootdir mandir)
   local var i=1
   for var in "${vars[@]}"; do
