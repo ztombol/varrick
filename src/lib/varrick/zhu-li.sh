@@ -22,38 +22,40 @@
 # format strings.
 #
 
-# Print list of variables referenced in the given template. When escaping is
-# enabled (default) escaped variables are not reported. The output contains one
-# variable name per line and can be directly captured into an array.
-# For example:
+# Print list of variables referenced in the template. When escaping is enabled,
+# escaped variables are not reported. The list is newline separated and can be
+# directly captured into an array. For example:
 #
 #   vars=( "$(get_referenced "$input")" )
 #
 # Globals:
 #   none
 # Arguments:
-#   $1 - template string
-#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
+#   $1 - template
+#   $2 - [=0] escaping, disabled if 0, enabled otherwise
 # Output:
-#   STDOUT - variable names separated by newlines
+#   STDOUT - list of variables
 # Returns:
 #   0 - list is not empty
 #   1 - otherwise
 get_referenced () {
   local input="$1"
   local do_escape="${2:-0}"
+
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
-
   local ref_vars
   if [ "$do_escape" != 0 ]; then
     ref_vars=( $(
-      # 1. surround non-escaped references with newlines: \$var   -> \n\$var\n
-      #                                                   \${var} -> \n\${var}\n
-      # 2. extract name of referenced variables: \$var   -> var
-      #                                          \${var} -> {var}
-      # 3. remove braces: {var} -> var
-      # 4. remove duplicates
+      # 1. Surround non-escaped references with newlines.
+      #      \$var   -> \n\$var\n
+      #      \${var} -> \n\${var}\n
+      # 2. Extract name of referenced variables.
+      #      \$var   -> var
+      #      \${var} -> {var}
+      # 3. Remove braces.
+      #      {var}   -> var
+      # 4. Remove duplicates.
       echo "$input" \
         | sed -r 's/((^|[^\])(\\\\)*)('"${ref}"')/\1\n\4\n/g' \
         | sed -rn 's/^'"${ref}"'$/\1/p' \
@@ -62,12 +64,15 @@ get_referenced () {
     ) )
   else
     ref_vars=( $(
-      # 1. surround references with newlines: \$var   -> \n\$var\n
-      #                                       \${var} -> \n\${var}\n
-      # 2. extract name of referenced variables: \$var   -> var
-      #                                          \${var} -> {var}
-      # 3. remove braces: {var} -> var
-      # 4. remove duplicates
+      # 1. Surround references with newlines.
+      #      \$var   -> \n\$var\n
+      #      \${var} -> \n\${var}\n
+      # 2. Extract name of referenced variables.
+      #      \$var   -> var
+      #      \${var} -> {var}
+      # 3. Remove braces.
+      #      {var}   -> var
+      # 4. Remove duplicates.
       echo "$input" \
         | sed -r 's/'"${ref}"'/\n&\n/g' \
         | sed -rn 's/^'"${ref}"'$/\1/p' \
@@ -80,34 +85,36 @@ get_referenced () {
   [ "${#ref_vars[@]}" -ne 0 ]
 }
 
-# Print list of escaped variable references in the given template. The output
-# contains one variable name per line and can be directly captured into an
-# array. For example:
+# Print list of escaped variable references in the template. The list is newline
+# separated and can be directly captured into an array. For example:
 #
 #   vars=( "$(get_escaped "$input")" )
 #
 # Globals:
 #   none
 # Arguments:
-#   $1 - template string
+#   $1 - template
 # Output:
-#   STDOUT - variable names separated by newlines
+#   STDOUT - list of variables
 # Returns:
 #   0 - list is not empty
 #   1 - otherwise
 get_escaped () {
   local input="$1"
+
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
-
   local esc_vars
   esc_vars=( $(
-    # 1. surround escaped references with newlines: \$var   -> \n\$var\n
-    #                                               \${var} -> \n\${var}\n
-    # 2. extract name of referenced variables: \$var   -> var
-    #                                          \${var} -> {var}
-    # 3. remove braces: {var} -> var
-    # 4. remove duplicates
+    # 1. Surround escaped references with newlines.
+    #      \$var   -> \n\$var\n
+    #      \${var} -> \n\${var}\n
+    # 2. Extract name of referenced variables.
+    #      \$var   -> var
+    #      \${var} -> {var}
+    # 3. Remove braces.
+    #      {var}   -> var
+    # 4. Remove duplicates.
     echo "$input" \
       | sed -r 's/((^|[^\])(\\\\)*)(\\)('"${ref}"')/\1\n\4\5\n/g' \
       | sed -rn 's/^\\'"${ref}"'$/\1/p' \
@@ -119,20 +126,20 @@ get_escaped () {
   [ "${#esc_vars[@]}" -ne 0 ]
 }
 
-# Print list of variables referenced in the given template but not defined in
-# the environment. When escaping is enabled (default) escaped variables are not
-# reported. The output contains one variable name per line and can be directly
+# Print list of variables referenced in the template, but not defined in the
+# environment. Complement of `get_defined'. When escaping is enabled, escaped
+# variables are not reported. The list is newline separated and can be directly
 # captured into an array. For example:
 #
 #   vars=( "$(get_missing "$input")" )
 #
 # Globals:
-#   ANY: enumerate environment variables.
+#   * - enumerate all environment variables
 # Arguments:
-#   $1 - template string
-#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
+#   $1 - template
+#   $2 - [=0] escaping, disabled if 0, enabled otherwise
 # Output:
-#   STDOUT - variable names separated by newlines
+#   STDOUT - list of variables
 # Returns:
 #   0 - list is not empty
 #   1 - otherwise
@@ -149,21 +156,20 @@ get_missing () {
   [ "${#miss_vars[@]}" -ne 0 ]
 }
 
-# Print list of variables referenced in the given template and defined in the
-# environment. When escaping is enabled (default) escaped variables are not
-# reported. Essentially, it prints the complement of `get_missing()'. The output
-# contains one variable name per line and can be directly captured into an
-# array. For example:
+# Print list of variables referenced in the template and defined in the
+# environment. Complement of `get_missing'. When escaping is enabled, escaped
+# variables are not reported. The list is newline separated and can be directly
+# captured into an array. For example:
 #
 #   vars=( "$(get_defined "$input")" )
 #
 # Globals:
-#   ANY: enumerate environment variables.
+#   * - enumerate all environment variables
 # Arguments:
-#   $1 - template string
-#   $2 - (opt) use escaping, 0 = disabled (default), enabled otherwise
+#   $1 - template
+#   $2 - [=0] escaping, disabled if 0, enabled otherwise
 # Output:
-#   STDOUT - variable names separated by newlines
+#   STDOUT - list of variables
 # Returns:
 #   0 - list is not empty
 #   1 - otherwise
@@ -180,81 +186,101 @@ get_defined () {
   [ "${#defined_vars[@]}" -ne 0 ]
 }
 
-# Transform the template read from STDIN to prevent `envsubst' to expand escaped
-# references. This involves the simple transformation of swapping the first two
-# characters of escaped references, i.e turning `\$' into `$\'. This is
-# necessary before expanding a template that contains escape sequences.
+# Transform template read from the standard input to prevent `envsubst'
+# expanding escaped references. This involves reversing the leading `\$' of
+# escaped references, i.e. turning `\$var' into `$\var'. This function is used
+# together with `unescape'.
+#
+# Example:
+#
+#   cat "$template_file" | escape | envsubst | unescape
 #
 # Globals:
 #   none
 # Arguments:
 #   none
-# Input:
-#   STDIN - template string
+# Inputs:
+#   STDIN - template
 # Outputs:
-#   STDOUT - escaped template string
+#   STDOUT - transformed template
 # Returns:
 #   none
 escape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
 
-  # Transform escaped references: \$var   -> $\var
-  #                               \${var} -> $\{var}
+  # Transform escaped references.
+  #   \$var   -> $\var
+  #   \${var} -> $\{var}
   sed -r 's/((^|[^\])(\\\\)*)(\\)'"$ref"'/\1$\4\5/g'
 }
 
-# Remove backslashes and backslashes escaping references from the template read
-# from STDIN. This is necessary after expanding a template that contains escape
-# sequences.
+# Remove escaping backslashes from the template read from the standard input.
+# This is a necessary step after expanding a template that uses escaping. This
+# function is used together with `escape'.
 #
-# Globals:
+# Example:
+#
+#   cat "$template_file" | escape | envsubst | unescape
+#
+# Global:
 #   none
 # Arguments:
 #   none
-# Input:
-#   STDIN - template string
+# Inputs:
+#   STDIN - template
 # Outputs:
-#   STDOUT - un-escaped template string
+#   STDOUT - transformed template
 # Returns:
 #   none
 unescape () {
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref_no_ds='('"${name}"'|\{'"${name}"'\})'
 
-  # 1. Remove backslash from escaped references: $\var   -> $var
-  #                                              $\{var} -> ${var}
-  # 2. Remove backslash from escaped backslashes: \\ -> \
+  # 1. Remove backslash from escaped references.
+  #      $\var   -> $var
+  #      $\{var} -> ${var}
+  # 2. Remove backslash from escaped backslashes.
+  #      \\ -> \
   sed -r -e 's/\$\\'"${ref_no_ds}"'/\$\1/g' \
          -e 's/\\\\/\\/g'
 }
 
-# Escape backslashes in the given environment variables. This is necessary
-# before expanding a template containing escape sequences to cancel out the
-# effect of `unescape()' on substituted values.
+# Escape backslashes in the given variables. This is a necessary step before
+# expanding a template that uses escaping. It cancels out the effect of
+# `unescape' on the substituted values. This function is used together with
+# `escape' and `unescape'.
+#
+# Example:
+#
+#   escape_vars $(get_defined "$template")
+#   cat "$template_file" | escape | envsubst | unescape
 #
 # Globals:
-#   none
+#   $@ - all variables passed as arguments
 # Arguments:
-#   $@ - list of variables to escape
+#   $@ - list of variables
 # Returns:
 #   none
 escape_vars () {
   for _d8e1_var in $@; do
-    # `\' -> `\\'
+    # Escape backslashes.
+    #   \ -> \\
     eval "$_d8e1_var"'="${'"$_d8e1_var"'//\\/\\\\}"'
   done
 }
 
-# Check whether all escape sequences are valid in the given template. Lines
-# containing invalid escape sequences are printed along with their line numbers.
+# Check whether all escape sequences are valid in the template. If invalid
+# escape sequences are encountered, an error message and the offending lines
+# along with their line number are displayed. Otherwise, a message stating
+# success is displayed.
 #
 # Globals:
 #   none
 # Arguments:
-#   $1 - template string
+#   $1 - template
 # Outputs:
-#   STDOUT - lines containing invalid escaping along with their numbers
+#   STDOUT - error message with offending lines, or message of success
 # Returns:
 #   0 - correct escaping
 #   1 - otherwise
@@ -290,25 +316,28 @@ check_esc () {
   return $error
 }
 
-# Escape variable references and backslashes in the given string. Useful for
-# preprocessing a file before turning it into a template.
+# Escape variable reference-like strings and backslashes in the template. This
+# is a useful first step when turning a plain file into a template.
 #
 # Globals:
 #   none
 # Arguments:
-#   $1 - string to preprocess
-# Output:
-#   STDOUT - pre-processed template string
+#   $1 - template
+# Outputs:
+#   STDOUT - escaped template
 # Returns:
 #   none
 preprocess () {
   local input="$1"
+
   local name='[a-zA-Z_][a-zA-Z_0-9]*'
   local ref='\$('"${name}"'|\{'"${name}"'\})'
 
-  # 1. escape backslashes: \ -> \\
-  # 2. escape references: $var   -> \$var
-  #                       ${var} -> \${var}
+  # 1. Escape backslashes.
+  #      \ -> \\
+  # 2. Escape references.
+  #      $var   -> \$var
+  #      ${var} -> \${var}
   echo "$input" | sed -r -e 's/\\/\\&/g' \
                          -e 's/'"$ref"'/\\&/g'
 }
