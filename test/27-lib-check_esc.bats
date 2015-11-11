@@ -5,7 +5,7 @@ load "$LIB_DIR/zhu-li.sh"
 fixtures lib
 
 # Correctness.
-@test 'check_esc() prints error and lines containing invalid escapes' {
+@test 'check_esc <template>: print error message if <template> contains invalid escape sequences' {
   local template="$(cat "$FIXTURE_ROOT/escape.invalid.tmpl")"
   run check_esc "$template"
   [ "$status" -eq 1 ]
@@ -57,7 +57,7 @@ fixtures lib
   [ "${lines[32]}" == '43: a\\\${a-' ]
 }
 
-@test 'check_esc() prints OK message when there are no invalid escapes' {
+@test 'check_esc <template>: print OK message if <template> does not contain invalid escape sequences' {
   local template="$(cat "$FIXTURE_ROOT/escape.valid.tmpl")"
   run check_esc "$template"
   [ "$status" -eq 0 ]
@@ -65,13 +65,13 @@ fixtures lib
 }
 
 # Interface.
-@test 'check_esc() returns 0 when there are no invalid escape sequences' {
+@test 'check_esc <template>: return 0 if <template> does not contain invalid escape sequences' {
   local template=''
   run check_esc "$template"
   [ "$status" -eq 0 ]
 }
 
-@test 'check_esc() returns 1 when there are invalid escape sequences' {
+@test 'check_esc <template>: return 1 if <template> contains invalid escape sequences' {
   local template='\'
   run check_esc "$template"
   [ "$status" -eq 1 ]

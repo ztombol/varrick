@@ -5,7 +5,7 @@ load "$LIB_DIR/zhu-li.sh"
 fixtures lib
 
 # Correctness.
-@test 'get_referenced() without escaping prints list of references' {
+@test 'get_referenced <template> <escaping=0>: disable escaping and print all references found in <template>' {
   local template="$(cat "$FIXTURE_ROOT/reference.tmpl")"
   run get_referenced "$template" 0
   [ "$status" -eq 0 ]
@@ -42,7 +42,7 @@ fixtures lib
   [ "${lines[29]}" == 'a9' ]
 }
 
-@test 'get_referenced() with escaping prints list of non-escaped references' {
+@test 'get_referenced <template> <escaping=1>: enable escaping and print non-escaped references found in <template>' {
   local template="$(cat "$FIXTURE_ROOT/reference.tmpl")"
   run get_referenced "$template" 1
   [ "$status" -eq 0 ]
@@ -68,21 +68,21 @@ fixtures lib
 }
 
 # Interface.
-@test 'get_referenced() returns 0 when there are references' {
+@test 'get_referenced <template>: return 0 if <template> contains references' {
   local template='$a'
-  run get_referenced "$template" 0
+  run get_referenced "$template"
   [ "$status" -eq 0 ]
   [ "$output" == 'a' ]
 }
 
-@test 'get_referenced() returns 1 when there are no references' {
+@test 'get_referenced <template>: return 1 if <template> does not contain references' {
   local template=''
-  run get_referenced "$template" 0
+  run get_referenced "$template"
   [ "$status" -eq 1 ]
   [ "$output" == '' ]
 }
 
-@test 'get_referenced() does not handle escaping by default' {
+@test 'get_referenced <template>: disable escaping by default' {
   local template='\$a'
   run get_referenced "$template"
   [ "$status" -eq 0 ]

@@ -5,7 +5,7 @@ load "$LIB_DIR/zhu-li.sh"
 fixtures lib
 
 # Correctness.
-@test 'get_escaped() prints list of escaped references' {
+@test 'get_escaped <template>: print escaped references found in <template>' {
   local template="$(cat "$FIXTURE_ROOT/reference.tmpl")"
   run get_escaped "$template"
   [ "$status" -eq 0 ]
@@ -25,14 +25,14 @@ fixtures lib
 }
 
 # Interface.
-@test 'get_escaped() returns 0 when there are escaped references' {
+@test 'get_escaped <template>: return 0 if <template> contains escaped references' {
   local template='\$a'
   run get_escaped "$template"
   [ "$status" -eq 0 ]
   [ "$output" == 'a' ]
 }
 
-@test 'get_escaped() returns 1 when there are no escaped references' {
+@test 'get_escaped <template>: return 1 if <template> does not contain escaped references' {
   local template=''
   run get_escaped "$template"
   [ "$status" -eq 1 ]

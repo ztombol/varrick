@@ -4,7 +4,7 @@ load lib-test-helper
 fixtures lib
 
 # Correctness.
-@test 'escape() transforms escaped references' {
+@test 'escape: transform escaped references in <template> read from STDIN' {
   local template="$FIXTURE_ROOT/reference.tmpl"
   run bash -c ". '$LIB_DIR/zhu-li.sh'; cat '$template' | escape"
   [ "$status" -eq 0 ]

@@ -4,7 +4,7 @@ load lib-test-helper
 load "$LIB_DIR/zhu-li.sh"
 
 # Correctness.
-@test 'get_defined() without escaping prints list of defined references' {
+@test 'get_defined <template> <escaping=0>: disable escaping and print defined references found in <template>' {
   export defined1=1 defined2=2
   local template='$defined1 \$defined2'
   run get_defined "$template" 0
@@ -14,7 +14,7 @@ load "$LIB_DIR/zhu-li.sh"
   [ "${lines[1]}" == 'defined2' ]
 }
 
-@test 'get_defined() with escaping prints list of defined non-escaped references' {
+@test 'get_defined <template> <escaping=1>: enable escaping and print defined non-escaped references found in <template>' {
   export defined1=1 defined2=2
   local template='$defined1 \$defined2'
   run get_defined "$template" 1
@@ -23,7 +23,7 @@ load "$LIB_DIR/zhu-li.sh"
 }
 
 # Interface.
-@test 'get_defined() returns 0 when there are defined references' {
+@test 'get_defined <template>: return 0 if <template> contains defined references' {
   export defined=1
   local template='$defined'
   run get_defined "$template"
@@ -31,14 +31,14 @@ load "$LIB_DIR/zhu-li.sh"
   [ "$output" == 'defined' ]
 }
 
-@test 'get_defined() returns 1 when there are no defined references' {
+@test 'get_defined <template>: return 0 if <template> does not contain defined references' {
   local template=''
   run get_defined "$template"
   [ "$status" -eq 1 ]
   [ "$output" == '' ]
 }
 
-@test 'get_defined() does not handle escaping by default' {
+@test 'get_defined <template>: disable escaping by default' {
   export defined=1
   local template='\$defined'
   run get_defined "$template"

@@ -4,7 +4,7 @@ load lib-test-helper
 fixtures lib
 
 # Correctness.
-@test 'unescape() removes escape characters' {
+@test 'unescape: remove escape characters in <template> read from STDIN' {
   local template="$FIXTURE_ROOT/reference.tmpl"
   run bash -c ". '$LIB_DIR/zhu-li.sh'; cat '$template' | escape | unescape"
   [ "$status" -eq 0 ]
