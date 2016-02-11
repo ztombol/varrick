@@ -1,0 +1,11 @@
+language: bash
+addons:
+  apt:
+    packages:
+      - ruby-ronn
+before_install:
+  - ./script/install-bats.sh
+before_script:
+  - export PATH="${HOME}/.local/bin:${PATH}"
+script:
+  - make check
