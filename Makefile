@@ -13,6 +13,9 @@ export libdir      ?= $(prefix)/lib
 export datarootdir ?= $(prefix)/share
 export mandir      ?= $(datarootdir)/man
 
+# Make parameters.
+SHELL := /usr/bin/env bash
+
 
 ########################################################################
 #                                BUILD
