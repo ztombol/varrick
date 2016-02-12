@@ -49,7 +49,7 @@
 # can be allowed by explicitly specifying `$MAKELEVEL`, the variable
 # responsible for this behaviour.
 #
-#     run env -i bash -c "export MAKELEVEL='$MAKELEVEL'; \
+#     run env -i bash -c "export MAKELEVEL='$MAKELEVEL'
 #                         make <target-to-test>"
 #
 # For examples, see the tests in `9?-make-*.bats`.

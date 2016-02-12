@@ -6,7 +6,10 @@ load make-test-helper
   # Avoid endless recursion.
   [ "$SKIP_MAKE_CHECK" == 1 ] && skip
 
-  run env -i bash -c "cd '$MAIN_DIR'; make SKIP_MAKE_CHECK=1 check"
+  # Export `$PATH' to be able to use programs in non-standard paths.
+  run env -i bash -c "export PATH='$PATH'
+                      cd '$MAIN_DIR'
+                      make SKIP_MAKE_CHECK=1 check"
   [ "$status" -eq 0 ]
 
   # Match tap output.
