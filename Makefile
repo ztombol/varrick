@@ -1,8 +1,8 @@
 # Project parameters.
-export SRCDIR    ::= ./src
-export TESTDIR   ::= ./test
-export DOCSDIR   ::= ./docs
-export SCRIPTDIR ::= ./script
+export SRCDIR    := ./src
+export TESTDIR   := ./test
+export DOCSDIR   := ./docs
+export SCRIPTDIR := ./script
 
 # Installation parameters.
 export prefix      ?= /usr/local
@@ -173,7 +173,7 @@ install-update:
 #                                 HELP
 ########################################################################
 
-define HELP_TEXT =
+define HELP_TEXT
 TARGETS:
 
   For packagers:
