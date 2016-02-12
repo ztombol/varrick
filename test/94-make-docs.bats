@@ -13,7 +13,10 @@ targets_docs_man () {
 targets_docs_img () {
   while local target; IFS=$'\n' read -r target; do
     target="${target/%html/png}"
-    target="${target/#${DOCSDIR}\/src/${DOCSDIR}\/img}"
+    # Leaving slashes in the last parameter of the expansion unescaped
+    # makes the expression compatible with Travis CI's version of bash
+    # (4.2.25).
+    target="${target/#${DOCSDIR}\/src/${DOCSDIR}/img}"
     echo "$target"
   done < <(find "${DOCSDIR}/src" -path '*.html')
 }
