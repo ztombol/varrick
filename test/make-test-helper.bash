@@ -32,7 +32,7 @@
 # modification to the test environment explicit and makes test cases
 # easier to understand.
 #
-#     run env -i bash -c "make <target-to-test>"
+#     run env -i bash -c 'make <target-to-test>'
 #
 # As a side effect, output testing also becomes simpler. Makefiles often
 # provide a target to run the test suite. In turn, if you are reading
