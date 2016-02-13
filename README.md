@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ztombol/varrick.svg?branch=master)](https://travis-ci.org/ztombol/varrick)
+
 # Varrick
 
 Varrick is a convenient template engine written in shell script and built around
