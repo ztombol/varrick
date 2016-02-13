@@ -14,7 +14,8 @@ load make-test-helper
   local mandir="${datarootdir}/man"
 
   # Run command.
-  run env -i bash -c "cd '$MAIN_DIR'; make install-params"
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make install-params"
   [ "$status" -eq 0 ]
 
   # Output.
@@ -41,7 +42,7 @@ load make-test-helper
   local mandir="${datarootdir}/mandir"
 
   # Run command.
-  run env -i bash -c "cd '$MAIN_DIR'; \
+  run env -i bash -c "cd '$MAIN_DIR'
                       make DESTDIR='$DESTDIR' \
                            prefix='$prefix' \
                            exec_prefix='$exec_prefix' \
@@ -77,8 +78,8 @@ load make-test-helper
   local mandir="${datarootdir}/mandir"
 
   # Run command.
-  run env -i bash -c "cd '$MAIN_DIR'; \
-                      make build &>/dev/null; \
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make build &>/dev/null
                       make DESTDIR='$DESTDIR' \
                            prefix='$prefix' \
                            exec_prefix='$exec_prefix' \
@@ -113,8 +114,8 @@ load make-test-helper
   local mandir="${datarootdir}/mandir"
 
   # Run command.
-  run env -i bash -c "cd '$MAIN_DIR'; \
-                      make build &>/dev/null; \
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make build &>/dev/null
                       make DESTDIR='$DESTDIR' \
                            prefix='$prefix' \
                            exec_prefix='$exec_prefix' \
@@ -151,8 +152,8 @@ load make-test-helper
   local mandir="${datarootdir}/mandir"
 
   # Run command.
-  run env -i bash -c "cd '${MAIN_DIR}'; \
-                      make build &>/dev/null; \
+  run env -i bash -c "cd '${MAIN_DIR}'
+                      make build &>/dev/null
                       make DESTDIR='${MAIN_DIR}/${DESTDIR}' \
                            prefix='$prefix' \
                            exec_prefix='$exec_prefix' \
@@ -165,7 +166,7 @@ load make-test-helper
   [ "$status" -eq 0 ]
 
   # Test paths.
-  run env -i bash -c "cd '${MAIN_DIR}/${DESTDIR}'; \
+  run env -i bash -c "cd '${MAIN_DIR}/${DESTDIR}'
                       echo 'The thing! Do the thing!' | '${bindir}/varrick'"
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 1 ]

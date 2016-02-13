@@ -92,7 +92,8 @@ setup () {
   local src_main_dir="${BATS_TEST_DIRNAME}/.."
   find "$src_main_dir" -maxdepth 1 -mindepth 1 ! -name .git \
                        -exec cp -a --reflink=auto -t "$TMP" '{}' \+
-  env -i bash -c "cd '$TMP'; make clean &>/dev/null"
+  env -i bash -c "cd '$TMP'
+                  make clean &>/dev/null"
 
   # Set project paths.
   MAIN_DIR="$TMP"

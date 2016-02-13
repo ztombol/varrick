@@ -22,7 +22,8 @@ targets_docs_img () {
 }
 
 @test 'make docs-man: generate HTML format man pages' {
-  run env -i bash -c "cd '$MAIN_DIR'; make docs-clean; make docs-man"
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make docs-clean docs-man"
   [ "$status" -eq 0 ]
   while local target; IFS=$'\n' read -r target; do
     assert_file_exist "$target"
@@ -30,7 +31,8 @@ targets_docs_img () {
 }
 
 @test 'make docs-img: rasterise HTML pages and save them as PNG' {
-  run env -i bash -c "cd '$MAIN_DIR'; make docs-clean; make docs-img"
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make docs-clean docs-img"
   [ "$status" -eq 0 ]
   while local target; IFS=$'\n' read -r target; do
     assert_file_exist "$target"
@@ -38,7 +40,8 @@ targets_docs_img () {
 }
 
 @test 'make docs: generate documentation' {
-  run env -i bash -c "cd '$MAIN_DIR'; make docs-clean; make docs"
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make docs-clean docs"
   [ "$status" -eq 0 ]
   while local target; IFS=$'\n' read -r target; do
     assert_file_exist "$target"
@@ -46,7 +49,8 @@ targets_docs_img () {
 }
 
 @test 'make docs-clean: delete generated documentation' {
-  run env -i bash -c "cd '$MAIN_DIR'; make docs; make docs-clean"
+  run env -i bash -c "cd '$MAIN_DIR'
+                      make docs docs-clean"
   [ "$status" -eq 0 ]
   while local target; IFS=$'\n' read -r target; do
     assert_file_not_exist "$target"
