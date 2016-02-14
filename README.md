@@ -1,3 +1,4 @@
+[![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/ztombol/varrick/master/COPYING)
 [![Build Status](https://travis-ci.org/ztombol/varrick.svg?branch=master)](https://travis-ci.org/ztombol/varrick)
 
 # Varrick
