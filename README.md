@@ -301,6 +301,11 @@ licences.
   source code distribution of Varrick along with their
   [license][local-liberation-license].
 
+***Note:*** *For brevity, copyright notices use ranges to specify years in which
+the copyright is valid. A range ("2014-2016") means that every year,
+inclusively, is a "copyrightable" year that would be listed individually ("2014,
+2015, 2016").*
+
 
 # Contribution
 

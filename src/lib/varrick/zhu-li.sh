@@ -1,5 +1,5 @@
 #
-# Copyright (C)  2015  Zoltan Tombol <zoltan (dot) tombol (at) gmail (dot) com>
+# Copyright (C)  2015-2016  Zoltan Tombol <zoltan dot tombol at gmail dot com>
 #
 # This file is part of Varrick.
 #

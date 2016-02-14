@@ -111,11 +111,13 @@ environment variables collding with inernally used variables. See
 
 ## COPYRIGHT
 
-Copyright (C) 2015 Zoltan Tombol `<zoltan (dot) tombol (at) gmail (dot) com>`
+Copyright (C) 2015-2016 Zoltan Tombol `<zoltan (dot) tombol (at) gmail (dot)
+com>`
 
 Licensed under GNU GPL version 3 or any later version. You should have received
 a copy of the licence along with Varrick. If not, see
 <<https://gnu.org/licenses/gpl.html>>.
+
 
 ## SEE ALSO
 
