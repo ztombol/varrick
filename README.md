@@ -287,10 +287,10 @@ variables.
 
 # Licence
 
-Varrick is licenced under [GPL version 3 or later][gplv3]. Contribution of any
-kind is welcome. If you find any bugs or have suggestions, open an issue or a
-pull request on the project's [GitHub page][varrick-gh]. See the contribution
-guidelines below.
+Varrick is licensed under [GPL version 3 or later][local-gplv3]. Contribution
+of any kind is welcome. If you find any bugs or have suggestions, open an issue
+or a pull request on the project's [GitHub page][varrick-gh]. See the
+contribution guidelines below.
 
 The following assets are provided by other projects and fall under different
 licences.
@@ -299,7 +299,7 @@ licences.
   licensed under [SIL Open Font Licence Version 1.1][sil-ofl]. These fonts were
   downloaded from [Fedora Hosted][liberation-fedora] and are included in the
   source code distribution of Varrick along with their
-  [license][local-liberation-license].
+  [licence][local-liberation-licence].
 
 ***Note:*** *For brevity, copyright notices use ranges to specify years in which
 the copyright is valid. A range ("2014-2016") means that every year,
@@ -368,7 +368,6 @@ behind Varrick is called *"Zhu-Li"*.
 [sed-hp]: https://www.gnu.org/software/sed/
 [wikia-varrick]: http://avatar.wikia.com/wiki/Iknik_Blackstone_Varrick
 [wikia-zhu-li]: http://avatar.wikia.com/wiki/Zhu_Li_Moon
-[gplv3]: https://www.gnu.org/licenses/gpl.txt
 [varrick-gh]: https://github.com/ztombol/varrick
 [git-contrib]: https://github.com/git/git/blob/master/Documentation/SubmittingPatches
 [gh-markdown]: https://help.github.com/articles/github-flavored-markdown/
@@ -379,5 +378,6 @@ behind Varrick is called *"Zhu-Li"*.
 [pkg-aur-stable]: https://aur.archlinux.org/packages/varrick
 [pkg-aur-development]: https://aur.archlinux.org/packages/varrick-git
 
-[local-liberation-license]: docs/src/css/fonts/liberation/LICENSE
+[local-gplv3]: COPYING
+[local-liberation-licence]: docs/src/css/fonts/liberation/LICENSE
 [man-varrick-1]: src/man/varrick.1.ronn
