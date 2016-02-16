@@ -13,11 +13,11 @@ test_s_summary () {
   [ "${lines[2]}" == '_thing' ]
 }
 
-@test "\`-s' reports referenced variables" {
+@test '-s: display referenced variables' {
   test_s_summary -s
 }
 
-@test "\`--summary' reports referenced variables" {
+@test '--summary: display referenced variables' {
   test_s_summary --summary
 }
 
@@ -29,11 +29,11 @@ test_s_summary_empty () {
   [ "$output" == '' ]
 }
 
-@test "\`-s' produces empty output when there are no referenced variables" {
+@test '-s: produce no output if there are no referenced variables' {
   test_s_summary_empty -s
 }
 
-@test "\`-sx' produces empty output when there are no referenced variables or escaped references" {
+@test '-sx: produce no output if there are no referenced variables or escaped references' {
   test_s_summary_empty -sx
 }
 
@@ -49,10 +49,10 @@ test_s_summary_x_escape () {
   [ "${lines[3]}" == '_thing' ]
 }
 
-@test "\`-sx' reports referenced variables and variables of escaped references" {
+@test '-sx: display referenced and escaped variables' {
   test_s_summary_x_escape -sx
 }
 
-@test "\`--summary --escape' reports referenced variables and variables of escaped references" {
+@test '--summary --escape: display referenced and escaped variables' {
   test_s_summary_x_escape --summary --escape
 }

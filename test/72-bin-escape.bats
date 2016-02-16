@@ -10,10 +10,10 @@ test_x_escape () {
   [ "$output" == '$_thing' ]
 }
 
-@test "\`-x' enables escaping references" {
+@test '-x: enable escaping' {
   test_x_escape -x
 }
 
-@test "\`--escape' enables escaping references" {
+@test '--escape: enable escaping' {
   test_x_escape --escape
 }

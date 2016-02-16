@@ -3,8 +3,8 @@
 load bin-test-helper
 fixtures bin
 
-# Internal prefix.
-@test 'report error when the internal prefix is detected in the environment' {
+# Environment.
+@test 'return 2 and display an error message if the internal prefix is detected in the environment' {
   export _d8e1_=1 _d8e1_a=1
   run "$EXEC"
   [ "$status" -eq 2 ]
@@ -15,7 +15,7 @@ fixtures bin
 }
 
 # General.
-@test "\`-u' displays usage information" {
+@test '-u: display usage' {
   run "$EXEC" -u
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 5 ]
@@ -23,14 +23,14 @@ fixtures bin
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test "\`--usage' displays usage information" {
+@test '--usage: display usage' {
   run "$EXEC" --usage
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test "\`-h' displays help" {
+@test '-h: display help' {
   run "$EXEC" -h
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -gt 5 ]
@@ -38,7 +38,7 @@ fixtures bin
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test "\`--help' displays help" {
+@test '--help: display help' {
   run "$EXEC" --help
   [ "$status" -eq 0 ]
   [ "${#lines[@]}" -gt 5 ]
@@ -46,55 +46,55 @@ fixtures bin
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test "\`-v' displays version information" {
+@test '-v: display version' {
   run "$EXEC" -v
   [ "$status" -eq 0 ]
   [ $(expr "$output" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
 }
 
-@test "\`--version' displays version information" {
+@test '--version: display version' {
   run "$EXEC" --version
   [ "$status" -eq 0 ]
   [ $(expr "$output" : 'Varrick v[0-9].[0-9].[0-9]$') -ne 0 ]
 }
 
 # Input source detection.
-@test 'reading template from file when TTY is available' {
+@test 'varrick <in>: read from <in> when STDIN is a TTY' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run "$EXEC" "$template"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'reading template from file when no TTY is available' {
+@test 'varrick <in>: read from <in> when STDIN is not a TTY' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run "$EXEC" "$template" 0>/dev/null
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'reading template from piped input when TTY is available' {
+@test '... | varrick: read from pipe when TTY is available' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "cat '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'reading template from piped input when no TTY is available' {
+@test '... | varrick: read from pipe when TTY is not available' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "cat '$template' | '$EXEC'" 0>/dev/null
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'reading template from redirected input when TTY is available' {
+@test 'varrick < <in>: read from redirected input when TTY is available' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "'$EXEC' < '$template'"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'reading template from redirected input when no TTY is available' {
+@test 'varrick < <in>: read from redirected input when TTY is not available' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "'$EXEC' < '$template'" 0>/dev/null
   [ "$status" -eq 0 ]
@@ -102,35 +102,35 @@ fixtures bin
 }
 
 # Input from file.
-@test 'FILE template: running without arguments prints usage' {
+@test 'varrick: return 1 and display usage' {
   run "$EXEC"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test 'FILE template: running with more than 2 arguments prints usage' {
+@test 'varrick <arg...>: return 1 and display usage if more than 2 arguments are specified' {
   run "$EXEC" arg1 arg2 arg3
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test 'FILE template: report error if the template file does not exist' {
+@test 'varrick <in>: return 1 and display an error message if <in> does not exist' {
   local template="$TMP/does_not_exist.tmpl"
   run "$EXEC" "$template"
   [ "$status" -eq 1 ]
   [ "$output" == "Error: no such file \`$template'" ]
 }
 
-@test 'FILE template: output to STDOUT when no destination is specified' {
+@test 'varrick <in>: write to STDOUT' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run "$EXEC" "$template"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'FILE template: output to file when destination is not a directory' {
+@test 'varrick <in> <out>: write to <out> if it is a file' {
   local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   run "$EXEC" "$template" "$expanded"
@@ -139,7 +139,7 @@ fixtures bin
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
 }
 
-@test "FILE template: output to file when destination is a directory and template ends in \`.tmpl'" {
+@test "varrick <in>.tmpl <out_dir>: write to <out_dir>/<in> if <out_dir> is a directory" {
   local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   local dest="$(dirname "$expanded")"
@@ -149,7 +149,7 @@ fixtures bin
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
 }
 
-@test "FILE template: output to file when destination is a directory and template does not end in \`.tmpl'" {
+@test "varrick <in> <out_dir>: write to <out_dir>/<in> if <out_dir> is a directory and <in> does not end in \`.tmpl'" {
   local template="$TMP/static.template"
   local expanded="$TMP/dest/static.template"
   local dest="$(dirname "$expanded")"
@@ -162,21 +162,21 @@ fixtures bin
 }
 
 # Input from STDIN.
-@test 'STDIN template: running with more than 1 argument prints usage' {
+@test '... | varrick <arg...>: return 1 and display usage if more than 1 argument is specified' {
   run bash -c "echo '' | '$EXEC' arg1 arg2"
   [ "$status" -eq 1 ]
   [ "${#lines[@]}" -eq 5 ]
   [ $(expr "${lines[1]}" : '^Usage:') -ne 0 ]
 }
 
-@test 'STDIN template: output to STDOUT when no destination is specified' {
+@test '... | varrick: write to STDOUT' {
   local template="$FIXTURE_ROOT/static.tmpl"
   run bash -c "cat '$template' | '$EXEC'"
   [ "$status" -eq 0 ]
   [ "$output" == "$(cat "$template")" ]
 }
 
-@test 'STDIN template: output to file when destination is not a directory' {
+@test '... | varrick <out>: write to <out> if it is a file' {
   local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   run bash -c "cat '$template' | '$EXEC' '$expanded'"
@@ -185,14 +185,14 @@ fixtures bin
   [ "$(cat "$expanded")" == "$(cat "$template")" ]
 }
 
-@test 'STDIN template: report error when destination is a directory' {
+@test '... | varrick <out_dir>: return 1 and display an error message if <out_dir> is a directory' {
   run bash -c "echo '' | '$EXEC' '$TMP'"
   [ "$status" -eq 1 ]
   [ "$output" == 'Error: destination cannot be a directory when reading the template from STDIN!' ]
 }
 
 # Test in-place expansion.
-@test 'expanding in-place' {
+@test 'varrick <in> <in>: expand template in-place' {
   export _thing='thing' _do='Do'
   local template="$TMP/dynamic.tmpl"
   cp "$FIXTURE_ROOT/dynamic.tmpl" "$template"

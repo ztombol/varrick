@@ -12,15 +12,15 @@ test_c_check () {
   [ "${lines[1]}" == '1: \' ]
 }
 
-@test "\`-c' reports lines containing invalid escape sequences" {
+@test '-c: display lines containing invalid escape sequences' {
   test_c_check -c
 }
 
-@test "\`--check' reports lines containing invalid escape sequences" {
+@test '--check: display lines containing invalid escape sequences' {
   test_c_check --check
 }
 
-@test "\`-c' reports good status when there are no invalid escapes" {
+@test '-c: report good status if there are no invalid escapes' {
   local template='\\'
   run bash -c "echo '$template' | '$EXEC' -c"
   [ "$status" -eq 0 ]

@@ -12,16 +12,16 @@ test_m_missing () {
   [ "${lines[1]}" == '_thing' ]
 }
 
-@test "\`-m' reports missing variables" {
+@test '-m: display missing variables' {
   test_m_missing -m
 }
 
-@test "\`--missing' reports missing variables" {
+@test '--missing: display missing variables' {
   test_m_missing --missing
 }
 
 # Test correctness.
-@test "\`-m' does not affect behaviour when all referenced variables are defined" {
+@test '-m: do not alter behaviour if all references are defined' {
   local template='$_thing'
   export _thing=thing
   run bash -c "echo '$template' | '$EXEC' -m"
@@ -39,10 +39,10 @@ test_m_missing_x_escape () {
   [ "${lines[1]}" == '_thing' ]
 }
 
-@test "\`-mx' does not report escaped variable references" {
+@test '-mx: do not display escaped variable references' {
   test_m_missing_x_escape -mx
 }
 
-@test "\`--missing --escape' does not report escaped variable references" {
+@test '--missing --escape: do not display escaped variable references' {
   test_m_missing_x_escape --missing --escape
 }

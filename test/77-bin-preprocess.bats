@@ -10,10 +10,10 @@ test_p_preprocess () {
   [ "$output" == '\$_thing' ]
 }
 
-@test "\`-p' escapes references and backslashes" {
+@test '-p: escape references and backslashes' {
   test_p_preprocess -p
 }
 
-@test "\`--preprocess' escapes references and backslashes" {
+@test '--preprocess: escape references and backslashes' {
   test_p_preprocess --preprocess
 }
