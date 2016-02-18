@@ -131,7 +131,7 @@ get_escaped () {
 # variables are not reported. The list is newline separated and can be directly
 # captured into an array. For example:
 #
-#   vars=( "$(get_missing "$input")" )
+#   vars=( "$(get_undefined "$input")" )
 #
 # Globals:
 #   * - enumerate all environment variables
@@ -143,7 +143,7 @@ get_escaped () {
 # Returns:
 #   0 - list is not empty
 #   1 - otherwise
-get_missing () {
+get_undefined () {
   local input="$1"
   local do_escape="${2:-0}"
 
@@ -157,7 +157,7 @@ get_missing () {
 }
 
 # Print list of variables referenced in the template and defined in the
-# environment. Complement of `get_missing'. When escaping is enabled, escaped
+# environment. Complement of `get_undefined'. When escaping is enabled, escaped
 # variables are not reported. The list is newline separated and can be directly
 # captured into an array. For example:
 #
