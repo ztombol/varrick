@@ -11,7 +11,7 @@ load lib-test-helper
     echo "\$var1"
     echo "\$var2"
 EOCMD
-  [ "${#lines[@]}" -eq 2 ]
-  [ "${lines[0]}" == '\\' ]
-  [ "${lines[1]}" == '\\\\' ]
+  assert_equal "${#lines[@]}" 2
+  assert_line --index 0 '\\'
+  assert_line --index 1 '\\\\'
 }

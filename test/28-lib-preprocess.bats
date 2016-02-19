@@ -8,16 +8,16 @@ fixtures lib
 @test 'preprocess <template>: print <template> with reference-like strings and backslashes escaped' {
   local template="$(cat "$FIXTURE_ROOT/pre_process.tmpl")"
   run preprocess "$template"
-  [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -eq 10 ]
-  [ "${lines[0]}" == '\\' ]
-  [ "${lines[1]}" == '$' ]
-  [ "${lines[2]}" == '\$a' ]
-  [ "${lines[3]}" == '${' ]
-  [ "${lines[4]}" == '${a' ]
-  [ "${lines[5]}" == '${a-' ]
-  [ "${lines[6]}" == '${a1' ]
-  [ "${lines[7]}" == '${a1-' ]
-  [ "${lines[8]}" == '${a1-}' ]
-  [ "${lines[9]}" == '\${a1}' ]
+  assert_success
+  assert_equal "${#lines[@]}" 10
+  assert_line --index 0 '\\'
+  assert_line --index 1 '$'
+  assert_line --index 2 '\$a'
+  assert_line --index 3 '${'
+  assert_line --index 4 '${a'
+  assert_line --index 5 '${a-'
+  assert_line --index 6 '${a1'
+  assert_line --index 7 '${a1-'
+  assert_line --index 8 '${a1-}'
+  assert_line --index 9 '\${a1}'
 }

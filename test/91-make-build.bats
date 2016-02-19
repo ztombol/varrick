@@ -12,7 +12,7 @@ targets_man () {
 @test 'make man: generate ROFF format man pages' {
   run env -i bash -c "cd '$MAIN_DIR'
                       make clean man"
-  [ "$status" -eq 0 ]
+  assert_success
   while local target; IFS=$'\n' read -r target; do
     assert_file_exist "$target"
   done < <(targets_man)
@@ -21,7 +21,7 @@ targets_man () {
 @test 'make build: build the application' {
   run env -i bash -c "cd '$MAIN_DIR'
                       make clean build"
-  [ "$status" -eq 0 ]
+  assert_success
   while local target; IFS=$'\n' read -r target; do
     assert_file_exist "$target"
   done < <(targets_man)
@@ -30,7 +30,7 @@ targets_man () {
 @test 'make clean: delete build files' {
   run env -i bash -c "cd '$MAIN_DIR'
                       make build clean"
-  [ "$status" -eq 0 ]
+  assert_success
   while local target; IFS=$'\n' read -r target; do
     assert_file_not_exist "$target"
   done < <(targets_man)

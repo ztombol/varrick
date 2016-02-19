@@ -10,12 +10,8 @@ load make-test-helper
   run env -i bash -c "export PATH='$PATH'
                       cd '$MAIN_DIR'
                       make SKIP_MAKE_CHECK=1 check"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Match tap output.
-  if ! [[ "$output" =~ ^bats.*?$'\n'[0-9]+\.\.[0-9]+($'\n'ok [0-9]+.*?)+$ ]]; then
-    echo 'ERROR: Something went wrong while running the test suite!' >&2
-    echo "$output"
-    false
-  fi
+  assert_output --regexp $'^bats.*?\n[0-9]+\.\.[0-9]+(\nok [0-9]+.*?)+$'
 }

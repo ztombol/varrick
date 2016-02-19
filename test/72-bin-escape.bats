@@ -6,8 +6,8 @@ load bin-test-helper
 test_x_escape () {
   local template='\$_thing'
   run bash -c "echo '$template' | '$EXEC' $*"
-  [ "$status" -eq 0 ]
-  [ "$output" == '$_thing' ]
+  assert_success
+  assert_output '$_thing'
 }
 
 @test '-x: enable escaping' {

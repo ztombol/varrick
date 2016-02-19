@@ -6,8 +6,8 @@ load bin-test-helper
 test_e_no-expand () {
   local template='$_thing'
   run bash -c "echo '$template' | '$EXEC' $*"
-  [ "$status" -eq 0 ]
-  [ "$output" == '$_thing' ]
+  assert_success
+  assert_output '$_thing'
 }
 
 @test '-e: do not expand undefined references' {
@@ -23,16 +23,16 @@ test_e_no-expand () {
   local template='$_thing'
   export _thing=thing
   run bash -c "echo '$template' | '$EXEC' -e"
-  [ "$status" -eq 0 ]
-  [ "$output" == 'thing' ]
+  assert_success
+  assert_output 'thing'
 }
 
 # Test with other options.
 test_e_no-expand_x_escape () {
   local template='\$_do $_thing'
   run bash -c "echo '$template' | '$EXEC' $*"
-  [ "$status" -eq 0 ]
-  [ "$output" == '$_do $_thing' ]
+  assert_success
+  assert_output '$_do $_thing'
 }
 
 # NOTE: Testing `-ex' in addition to `-x' does not give more assurance of
@@ -50,6 +50,6 @@ test_e_no-expand_x_escape () {
 
 @test "-em: return 1 and display an error message on mutually exclusive options" {
   run bash -c "echo '' | '$EXEC' -e -m"
-  [ "$status" -eq 1 ]
-  [ "$output" == "Error: \`--missing' (-m) and \`--no-expand' (-e) are mutually exclusive!" ]
+  assert_failure 1
+  assert_output "Error: \`--missing' (-m) and \`--no-expand' (-e) are mutually exclusive!"
 }

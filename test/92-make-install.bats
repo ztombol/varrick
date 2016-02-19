@@ -16,18 +16,18 @@ load make-test-helper
   # Run command.
   run env -i bash -c "cd '$MAIN_DIR'
                       make install-params"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Output.
-  [ "${lines[0]}" == '-> Parameters' ]
+  assert_line --index 0 '-> Parameters'
   local -r vars=(DESTDIR prefix exec_prefix bindir libexecdir libdir
                  datarootdir mandir)
   local var i=1
   for var in "${vars[@]}"; do
-    [ "${lines[$i]}" == "$(printf '  %-11s = %s\n' "$var" "${!var}")" ]
+    assert_line --index "$i" "$(printf '  %-11s = %s\n' "$var" "${!var}")"
     (( ++i ))
   done
-  [ "${#lines[@]}" -eq "$i" ]
+  assert_equal "${#lines[@]}" "$i"
 }
 
 @test "make <path...> install-params: display custom paths" {
@@ -52,18 +52,18 @@ load make-test-helper
                            datarootdir='$datarootdir' \
                            mandir='$mandir' \
                            install-params"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Output.
-  [ "${lines[0]}" == '-> Parameters' ]
+  assert_line --index 0 '-> Parameters'
   local -r vars=(DESTDIR prefix exec_prefix bindir libexecdir libdir
                  datarootdir mandir)
   local var i=1
   for var in "${vars[@]}"; do
-    [ "${lines[$i]}" == "$(printf '  %-11s = %s\n' "$var" "${!var}")" ]
+    assert_line --index "$i" "$(printf '  %-11s = %s\n' "$var" "${!var}")"
     (( ++i ))
   done
-  [ "${#lines[@]}" -eq "$i" ]
+  assert_equal "${#lines[@]}" "$i"
 }
 
 @test "make <path...> install-files: install to custom location" {
@@ -89,17 +89,17 @@ load make-test-helper
                            datarootdir='$datarootdir' \
                            mandir='$mandir' \
                            install-files"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Files.
-  [ "${lines[0]}" == '-> Installing files' ]
+  assert_line --index 0 '-> Installing files'
   local i=1
   while local file; IFS=$'\n' read -r file; do
     assert_file_exist "${MAIN_DIR}/${file}"
-    [ "${lines[$i]}" == "  $file" ]
+    assert_line --index "$i" "  $file"
     ((++i))
   done < <(installed_files)
-  [ "${#lines[@]}" -eq "$i" ]
+  assert_equal "${#lines[@]}" "$i"
 }
 
 @test "make <path...> install-update: update paths in the launcher" {
@@ -127,15 +127,15 @@ load make-test-helper
                            install-files \
                            install-update \
                         | sed -e '/^-> Updating files$/,$ !d;'"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Updates.
-  [ "${#lines[@]}" -eq 2 ]
-  [ "${lines[0]}" == '-> Updating files' ]
+  assert_equal "${#lines[@]}" 2
+  assert_line --index 0 '-> Updating files'
 
   # Launcher.
   local file="${DESTDIR}${bindir}/varrick"
-  [ "${lines[1]}" == "  $file" ]
+  assert_line --index 1 "  $file"
   assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIBEXEC_DIR' "${libexecdir}/varrick"
   assert_launcher_var "${MAIN_DIR}/${file}" '_d8e1_LIB_DIR' "${libdir}/varrick"
 }
@@ -163,14 +163,14 @@ load make-test-helper
                            datarootdir='$datarootdir' \
                            mandir='$mandir' \
                            install"
-  [ "$status" -eq 0 ]
+  assert_success
 
   # Test paths.
   run env -i bash -c "cd '${MAIN_DIR}/${DESTDIR}'
                       echo 'The thing! Do the thing!' | '${bindir}/varrick'"
-  [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -eq 1 ]
-  [ "$output" == 'The thing! Do the thing!' ]
+  assert_success
+  assert_equal "${#lines[@]}" 1
+  assert_output 'The thing! Do the thing!'
 }
 
 

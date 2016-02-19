@@ -260,6 +260,8 @@ It is recommended to run the test suite after building. Install [Bats][bats-gh]
 and run time dependencies listed in *Install* below, and run the tests.
 
 ```shell
+$ git submodule init
+$ git submodule update
 $ make -k check
 ```
 
@@ -301,6 +303,10 @@ licences.
   downloaded from [Fedora Hosted][liberation-fedora] and are included in the
   source code distribution of Varrick along with their
   [licence][local-liberation-licence].
+- [*bats-core*][bats-core] and [*bats-assert*][bats-assert], the helper
+  libraries used in the test suite, are licensed under [CC0][cc0]. They are
+  added to this repository as Git submodules and are available on
+  [GitHub][ztombol-gh].
 
 ***Note:*** *For brevity, copyright notices use ranges to specify years in which
 the copyright is valid. A range ("2014-2016") means that every year,
@@ -375,6 +381,10 @@ behind Varrick is called *"Zhu-Li"*.
 [ronn-hp]: https://rtomayko.github.io/ronn/
 [liberation-fedora]: https://fedorahosted.org/liberation-fonts/
 [sil-ofl]: http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL
+[cc0]: https://creativecommons.org/publicdomain/zero/1.0/
+[ztombol-gh]: https://github.com/ztombol
+[bats-core]: https://github.com/ztombol/bats-core
+[bats-assert]: https://github.com/ztombol/bats-assert
 [phantomjs-gh]: https://github.com/ariya/phantomjs/
 [pkg-aur-stable]: https://aur.archlinux.org/packages/varrick
 [pkg-aur-development]: https://aur.archlinux.org/packages/varrick-git

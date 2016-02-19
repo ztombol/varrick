@@ -8,33 +8,33 @@ fixtures lib
 @test 'get_escaped <template>: print escaped references found in <template>' {
   local template="$(cat "$FIXTURE_ROOT/reference.tmpl")"
   run get_escaped "$template"
-  [ "$status" -eq 0 ]
-  [ "${#lines[@]}" -eq 12 ]
-  [ "${lines[ 0]}" == 'a1' ]
-  [ "${lines[ 1]}" == 'a10' ]
-  [ "${lines[ 2]}" == 'a11' ]
-  [ "${lines[ 3]}" == 'a12' ]
-  [ "${lines[ 4]}" == 'a2' ]
-  [ "${lines[ 5]}" == 'a3' ]
-  [ "${lines[ 6]}" == 'a4' ]
-  [ "${lines[ 7]}" == 'a5' ]
-  [ "${lines[ 8]}" == 'a6' ]
-  [ "${lines[ 9]}" == 'a7' ]
-  [ "${lines[10]}" == 'a8' ]
-  [ "${lines[11]}" == 'a9' ]
+  assert_success
+  assert_equal "${#lines[@]}" 12
+  assert_line --index 0 'a1'
+  assert_line --index 1 'a10'
+  assert_line --index 2 'a11'
+  assert_line --index 3 'a12'
+  assert_line --index 4 'a2'
+  assert_line --index 5 'a3'
+  assert_line --index 6 'a4'
+  assert_line --index 7 'a5'
+  assert_line --index 8 'a6'
+  assert_line --index 9 'a7'
+  assert_line --index 10 'a8'
+  assert_line --index 11 'a9'
 }
 
 # Interface.
 @test 'get_escaped <template>: return 0 if <template> contains escaped references' {
   local template='\$a'
   run get_escaped "$template"
-  [ "$status" -eq 0 ]
-  [ "$output" == 'a' ]
+  assert_success
+  assert_output 'a'
 }
 
 @test 'get_escaped <template>: return 1 if <template> does not contain escaped references' {
   local template=''
   run get_escaped "$template"
-  [ "$status" -eq 1 ]
-  [ "$output" == '' ]
+  assert_failure 1
+  assert_output ''
 }
