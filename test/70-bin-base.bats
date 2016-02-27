@@ -34,7 +34,7 @@ fixtures bin
   run "$EXEC" -h
   assert_success
   assert_equal "${#lines[@]}" 14
-  assert_line --index 0 --regexp 'Varrick v[0-9].[0-9].[0-9]$'
+  assert_line --index 0 --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
   assert_line --index 1 --regexp '^Usage:'
 }
 
@@ -42,20 +42,20 @@ fixtures bin
   run "$EXEC" --help
   assert_success
   assert_equal "${#lines[@]}" 14
-  assert_line --index 0 --regexp 'Varrick v[0-9].[0-9].[0-9]$'
+  assert_line --index 0 --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
   assert_line --index 1 --regexp '^Usage:'
 }
 
 @test '-v: display version' {
   run "$EXEC" -v
   assert_success
-  assert_output --regexp 'Varrick v[0-9].[0-9].[0-9]$'
+  assert_output --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
 }
 
 @test '--version: display version' {
   run "$EXEC" --version
   assert_success
-  assert_output --regexp 'Varrick v[0-9].[0-9].[0-9]$'
+  assert_output --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
 }
 
 # Input source detection.
