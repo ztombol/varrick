@@ -6,5 +6,8 @@ load make-test-helper
   run env -i bash -c "cd '$MAIN_DIR'
                       make help"
   assert_success
-  assert_output --regexp '^TARGETS:.*ENVIRONMENT:.*EXAMPLES:.*REFERENCES.*$'
+  assert_line 'TARGETS:'
+  assert_line 'ENVIRONMENT:'
+  assert_line 'EXAMPLES:'
+  assert_line 'REFERENCES:'
 }
