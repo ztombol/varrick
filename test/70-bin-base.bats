@@ -19,7 +19,7 @@ test_u_usage () {
   run "$EXEC" $*
   assert_success
   assert_equal "${#lines[@]}" 5
-  assert_line --index 0 --regexp 'Varrick v[0-9].[0-9].[0-9]$'
+  assert_line --index 0 --regexp '^Varrick v[0-9].[0-9].[0-9]$'
   assert_line --index 1 --regexp '^Usage:'
 }
 
@@ -35,7 +35,7 @@ test_h_help () {
   run "$EXEC" $*
   assert_success
   assert_equal "${#lines[@]}" 14
-  assert_line --index 0 --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
+  assert_line --index 0 --regexp '^Varrick v[0-9]+.[0-9]+.[0-9]+$'
   assert_line --index 1 --regexp '^Usage:'
 }
 
@@ -50,7 +50,7 @@ test_h_help () {
 test_v_version () {
   run "$EXEC" $*
   assert_success
-  assert_output --regexp 'Varrick v[0-9]+.[0-9]+.[0-9]+$'
+  assert_output --regexp '^Varrick v[0-9]+.[0-9]+.[0-9]+$'
 }
 
 @test '-v: display version' {
