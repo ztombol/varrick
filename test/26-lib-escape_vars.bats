@@ -9,6 +9,7 @@ load lib-test-helper
                escape_vars var1 var2;
                echo "$var1";
                echo "$var2";'
+  assert_success
   assert_equal "${#lines[@]}" 2
   assert_line --index 0 '\\'
   assert_line --index 1 '\\\\'
