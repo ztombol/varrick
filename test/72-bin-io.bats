@@ -3,64 +3,6 @@
 load bin-test-helper
 fixtures bin
 
-# Environment.
-@test 'return 2 and display an error message if the internal prefix is detected in the environment' {
-  export _d8e1_=1 _d8e1_a=1
-  run "$EXEC"
-  assert_failure 2
-  assert_equal "${#lines[@]}" 3
-  assert_line --index 0 "Error: no variable with the prefix \`_d8e1_' should exist in the environment!"
-  assert_line --index 1 '_d8e1_'
-  assert_line --index 2 '_d8e1_a'
-}
-
-# General.
-test_u_usage () {
-  run "$EXEC" $*
-  assert_success
-  assert_equal "${#lines[@]}" 5
-  assert_line --index 0 --regexp '^Varrick v[0-9].[0-9].[0-9]$'
-  assert_line --index 1 --regexp '^Usage:'
-}
-
-@test '-u: display usage' {
-  test_u_usage -u
-}
-
-@test '--usage: display usage' {
-  test_u_usage --usage
-}
-
-test_h_help () {
-  run "$EXEC" $*
-  assert_success
-  assert_equal "${#lines[@]}" 14
-  assert_line --index 0 --regexp '^Varrick v[0-9]+.[0-9]+.[0-9]+$'
-  assert_line --index 1 --regexp '^Usage:'
-}
-
-@test '-h: display help' {
-  test_h_help -h
-}
-
-@test '--help: display help' {
-  test_h_help --help
-}
-
-test_v_version () {
-  run "$EXEC" $*
-  assert_success
-  assert_output --regexp '^Varrick v[0-9]+.[0-9]+.[0-9]+$'
-}
-
-@test '-v: display version' {
-  test_v_version -v
-}
-
-@test '--version: display version' {
-  test_v_version --version
-}
-
 # Input source detection.
 @test 'varrick <in>: read from <in> when STDIN is a TTY' {
   local template="$FIXTURE_ROOT/static.tmpl"
