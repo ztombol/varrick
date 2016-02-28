@@ -79,8 +79,9 @@ fixtures bin
   local template="$FIXTURE_ROOT/static.tmpl"
   local expanded="$TMP/static"
   run "$EXEC" "$template" "$expanded"
+echo "$output"
   assert_success
-  [ -f "$expanded" ]
+  assert_file_exist "$expanded"
   assert_equal "$(cat "$expanded")" "$(cat "$template")"
 }
 
@@ -90,7 +91,7 @@ fixtures bin
   local dest="$(dirname "$expanded")"
   run "$EXEC" "$template" "$dest"
   assert_success
-  [ -f "$expanded" ]
+  assert_file_exist "$expanded"
   assert_equal "$(cat "$expanded")" "$(cat "$template")"
 }
 
@@ -102,7 +103,7 @@ fixtures bin
   mkdir "$dest"
   run "$EXEC" "$template" "$dest"
   assert_success
-  [ -f "$expanded" ]
+  assert_file_exist "$expanded"
   assert_equal "$(cat "$expanded")" "$(cat "$template")"
 }
 
@@ -126,7 +127,7 @@ fixtures bin
   local expanded="$TMP/static"
   run bash -c "cat '$template' | '$EXEC' '$expanded'"
   assert_success
-  [ -f "$expanded" ]
+  assert_file_exist "$expanded"
   assert_equal "$(cat "$expanded")" "$(cat "$template")"
 }
 

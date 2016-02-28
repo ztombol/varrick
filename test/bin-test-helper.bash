@@ -31,3 +31,5 @@ load_lib() {
 
 load_lib bats-core
 load_lib bats-assert
+load_lib bats-file
+BATSLIB_FILE_PREFIX="$TMP"
