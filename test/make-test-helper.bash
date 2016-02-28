@@ -107,22 +107,6 @@ teardown () {
   [ -e "$TMP" ] && rm -rf "$TMP"
 }
 
-assert_file_exist () {
-  local file="$1"
-  if [ ! -e "$file" ]; then
-    echo "ERROR: No such file or directory: \`${file#${MAIN_DIR}/}'" >&2
-    false
-  fi
-}
-
-assert_file_not_exist () {
-  local file="$1"
-  if [ -e "$file" ]; then
-    echo "ERROR: File or directory should not exist: \`${file#${MAIN_DIR}/}'" >&2
-    false
-  fi
-}
-
 # Load a library from the `${BATS_TEST_DIRNAME}/test_helper' directory.
 #
 # Globals:
@@ -139,3 +123,5 @@ load_lib() {
 
 load_lib bats-core
 load_lib bats-assert
+load_lib bats-file
+BATSLIB_FILE_PREFIX="$MAIN_DIR"
