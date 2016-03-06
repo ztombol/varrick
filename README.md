@@ -240,7 +240,7 @@ see all targets and supported environment variables.
 
 Install build time dependencies.
 
-- make - Build system.
+- make `3.81` or later - Build system.
 - [Ronn][ronn-hp] - Generating roff format man pages from markdown.
 - [PhantomJS][phantomjs-gh] - Generating images for HTML documentation.
 
@@ -270,7 +270,7 @@ $ make -k check
 
 Install run time dependencies.
 
-- Bash - Currently the only supported shell (non-portable syntax was avoided in
+- Bash `4.2.25` or later - Currently the only supported shell (non-portable syntax was avoided in
   many cases to ease porting in the future).
 - [`envsubst`][envsubst-hp] from [`gettext`][gettext-hp]
 - [`sed`][sed-hp]
