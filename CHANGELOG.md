@@ -55,7 +55,8 @@ overfishing." -- Zoltan Tombol*
 
 [***Axolotl*** ``>(`-`)<``](https://en.wikipedia.org/wiki/Axolotl)
 
-*"Axolotl, a cancer-resisting, regenerating cute little animal that is now unfortunately extinct in the wild." -- Zoltan Tombol*
+*"Axolotl, a cancer-resisting, regenerating cute little animal that is
+now unfortunately extinct in the wild." -- Zoltan Tombol*
 
 ### Added
 
