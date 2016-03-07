@@ -1,6 +1,7 @@
 # Varrick
 
 [![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/ztombol/varrick/master/COPYING)
+[![GitHub release](https://img.shields.io/github/release/ztombol/varrick.svg)](https://github.com/ztombol/varrick/releases/latest)
 [![Build Status](https://travis-ci.org/ztombol/varrick.svg?branch=master)](https://travis-ci.org/ztombol/varrick)
 
 Varrick is a convenient template engine written in shell script and built around
